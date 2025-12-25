@@ -7,6 +7,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database.js"></script>
     <style>
         :root {
             --primary-color: #2e7d32;
@@ -2658,8 +2662,126 @@
     </div>
     
     <script>
-        // Fix untuk bug dan peningkatan responsivitas
+        // Firebase Configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyALzmkMAaJEwZO04OMAZaaWfcLBjYU2GCM",
+            authDomain: "reservasi-kemah-bsa.firebaseapp.com",
+            databaseURL: "https://reservasi-kemah-bsa-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "reservasi-kemah-bsa",
+            storageBucket: "reservasi-kemah-bsa.firebasestorage.app",
+            messagingSenderId: "883193001958",
+            appId: "1:883193001958:web:9aa40ce72e83e0ac32c827"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
         
+        // Firestore Database Reference
+        let firebaseEnabled = false;
+        
+        // Function to check Firebase connection
+        function checkFirebaseConnection() {
+            try {
+                const connectedRef = database.ref(".info/connected");
+                connectedRef.on("value", function(snap) {
+                    if (snap.val() === true) {
+                        console.log("Firebase Connected");
+                        firebaseEnabled = true;
+                    } else {
+                        console.log("Firebase Disconnected");
+                        firebaseEnabled = false;
+                    }
+                });
+                return true;
+            } catch (error) {
+                console.error("Firebase connection error:", error);
+                firebaseEnabled = false;
+                return false;
+            }
+        }
+        
+        // Function to sync data to Firebase
+        function syncToFirebase() {
+            if (!firebaseEnabled) return;
+            
+            try {
+                const user = dataApp.user;
+                if (!user) return;
+                
+                const userDataRef = database.ref(`users/${user.username}/data`);
+                const dataToSave = {
+                    reservasi: dataApp.reservasi,
+                    invoice: dataApp.invoice,
+                    lapakTenda: dataApp.lapakTenda,
+                    glamping: dataApp.glamping,
+                    barangSewa: dataApp.barangSewa,
+                    akomodasiLainnya: dataApp.akomodasiLainnya,
+                    pengaturan: dataApp.pengaturan,
+                    users: dataApp.users,
+                    lastSync: new Date().toISOString()
+                };
+                
+                userDataRef.set(dataToSave)
+                    .then(() => {
+                        console.log("Data synced to Firebase");
+                    })
+                    .catch((error) => {
+                        console.error("Firebase sync error:", error);
+                    });
+            } catch (error) {
+                console.error("Error syncing to Firebase:", error);
+            }
+        }
+        
+        // Function to load data from Firebase
+        function loadFromFirebase() {
+            if (!firebaseEnabled) return false;
+            
+            return new Promise((resolve, reject) => {
+                try {
+                    const user = dataApp.user;
+                    if (!user) {
+                        resolve(false);
+                        return;
+                    }
+                    
+                    const userDataRef = database.ref(`users/${user.username}/data`);
+                    userDataRef.once('value')
+                        .then((snapshot) => {
+                            const firebaseData = snapshot.val();
+                            if (firebaseData) {
+                                // Merge data from Firebase
+                                dataApp.reservasi = firebaseData.reservasi || dataApp.reservasi;
+                                dataApp.invoice = firebaseData.invoice || dataApp.invoice;
+                                dataApp.lapakTenda = firebaseData.lapakTenda || dataApp.lapakTenda;
+                                dataApp.glamping = firebaseData.glamping || dataApp.glamping;
+                                dataApp.barangSewa = firebaseData.barangSewa || dataApp.barangSewa;
+                                dataApp.akomodasiLainnya = firebaseData.akomodasiLainnya || dataApp.akomodasiLainnya;
+                                dataApp.pengaturan = { ...dataApp.pengaturan, ...firebaseData.pengaturan };
+                                if (firebaseData.pengaturan && firebaseData.pengaturan.perusahaan) {
+                                    dataApp.pengaturan.perusahaan = { ...dataApp.pengaturan.perusahaan, ...firebaseData.pengaturan.perusahaan };
+                                }
+                                dataApp.users = firebaseData.users || dataApp.users;
+                                
+                                console.log("Data loaded from Firebase");
+                                resolve(true);
+                            } else {
+                                console.log("No data found in Firebase");
+                                resolve(false);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Firebase load error:", error);
+                            resolve(false);
+                        });
+                } catch (error) {
+                    console.error("Error loading from Firebase:", error);
+                    resolve(false);
+                }
+            });
+        }
+
         // Utility Functions
         function formatRupiah(number) {
             if (isNaN(number)) number = 0;
@@ -2872,7 +2994,7 @@
             }
         }
 
-        // Save data ke localStorage
+        // Save data ke localStorage dan Firebase
         function saveToLocalStorage() {
             try {
                 const dataToSave = {
@@ -2887,6 +3009,9 @@
                     lastBackup: new Date().toISOString()
                 };
                 localStorage.setItem('reservasiDataBSA', JSON.stringify(dataToSave));
+                
+                // Sync to Firebase if enabled
+                syncToFirebase();
             } catch (e) {
                 console.error('Error saving to localStorage:', e);
                 alert('Gagal menyimpan data ke localStorage. Kemungkinan storage penuh.');
@@ -2913,7 +3038,24 @@
                 errorElement.classList.add('hidden');
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
-                initializeApp();
+                
+                // Check Firebase connection
+                checkFirebaseConnection();
+                
+                // Load data from Firebase if available
+                showLoadingModal('Memuat data...');
+                loadFromFirebase().then((firebaseLoaded) => {
+                    if (firebaseLoaded) {
+                        console.log("Data loaded from Firebase successfully");
+                    } else {
+                        console.log("Using local data");
+                    }
+                    initializeApp();
+                    hideLoadingModal();
+                }).catch(() => {
+                    initializeApp();
+                    hideLoadingModal();
+                });
             } else {
                 errorElement.textContent = 'Username atau password salah!';
                 errorElement.classList.remove('hidden');
@@ -2998,6 +3140,13 @@
             
             // Update backup counts
             updateBackupCounts();
+            
+            // Show Firebase status
+            if (firebaseEnabled) {
+                console.log("Firebase sync enabled");
+            } else {
+                console.log("Firebase sync disabled - using local storage only");
+            }
         }
 
         function showSection(sectionId) {
@@ -5982,8 +6131,11 @@ Lanjutkan?`)) {
         // --- Global Event Listeners ---
 
         document.addEventListener('DOMContentLoaded', (event) => {
-            // Load data
+            // Load data from localStorage first
             loadFromLocalStorage();
+            
+            // Check Firebase connection
+            checkFirebaseConnection();
             
             // Set today's date for date inputs
             const today = formatDate(new Date());
