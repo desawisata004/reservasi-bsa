@@ -42,7 +42,6 @@
             padding: 0 15px;
         }
         
-        /* Header Styles - Mobile Friendly */
         header {
             background-color: var(--primary-color);
             color: white;
@@ -114,7 +113,6 @@
             background-color: rgba(255, 255, 255, 0.3);
         }
         
-        /* Mobile Menu Toggle */
         .menu-toggle {
             display: none;
             background: none;
@@ -159,7 +157,6 @@
             background-color: var(--dark-color);
         }
         
-        /* Main Content */
         .main-content {
             display: flex;
             flex-wrap: wrap;
@@ -191,7 +188,6 @@
             margin-right: 8px;
         }
         
-        /* Dashboard Cards */
         .dashboard-cards {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -232,7 +228,6 @@
             font-size: 0.8rem;
         }
         
-        /* Form Styles */
         .form-group {
             margin-bottom: 12px;
         }
@@ -250,7 +245,7 @@
             padding: 10px 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px !important; /* Prevents zoom on iOS */
+            font-size: 16px !important;
             transition: border 0.3s;
             -webkit-appearance: none;
             appearance: none;
@@ -272,7 +267,6 @@
             min-width: 150px;
         }
         
-        /* Button Styles */
         .btn {
             padding: 10px 16px;
             border: none;
@@ -334,7 +328,6 @@
             min-height: 36px;
         }
         
-        /* Table Styles - IMPROVED FOR MOBILE */
         .table-responsive {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -378,7 +371,6 @@
             background-color: #f9f9f9;
         }
         
-        /* Lapak Visualization */
         .lapak-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(55px, 1fr));
@@ -447,7 +439,6 @@
             transform: scale(1.03);
         }
         
-        /* Invoice Styles */
         .invoice {
             border: 2px solid var(--light-color);
             border-radius: 8px;
@@ -478,7 +469,6 @@
             padding-top: 12px;
         }
         
-        /* Footer */
         footer {
             background-color: var(--dark-color);
             color: white;
@@ -510,7 +500,6 @@
             opacity: 0.8;
         }
         
-        /* Tabs Styles - IMPROVED FOR MOBILE */
         .tabs-container {
             position: relative;
             margin-bottom: 15px;
@@ -561,7 +550,6 @@
             display: block;
         }
         
-        /* Visualisasi Grid */
         .visualization-grid {
             display: grid;
             grid-template-columns: repeat(10, 1fr);
@@ -578,21 +566,6 @@
             color: white;
             font-weight: bold;
             font-size: 0.7rem;
-        }
-        
-        /* Responsive Styles */
-        @media (max-width: 992px) {
-            .dashboard-cards {
-                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            }
-            
-            .visualization-grid {
-                grid-template-columns: repeat(8, 1fr);
-            }
-            
-            .footer-content {
-                grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            }
         }
         
         @media (max-width: 768px) {
@@ -667,7 +640,6 @@
                 grid-template-columns: 1fr;
             }
             
-            /* Improved mobile table scrolling */
             .table {
                 min-width: 650px;
             }
@@ -779,36 +751,6 @@
             }
         }
         
-        @media (max-width: 360px) {
-            .dashboard-cards {
-                grid-template-columns: 1fr;
-            }
-            
-            .lapak-container {
-                grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
-            }
-            
-            .lapak-item {
-                height: 40px;
-                font-size: 0.7rem;
-            }
-            
-            .tab {
-                padding: 6px 8px;
-                font-size: 0.75rem;
-            }
-            
-            .visualization-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .grid-item {
-                height: 25px;
-                font-size: 0.55rem;
-            }
-        }
-        
-        /* Utility Classes */
         .hidden {
             display: none !important;
         }
@@ -931,7 +873,6 @@
             background-color: var(--warning-color);
         }
         
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -983,7 +924,6 @@
             padding: 5px;
         }
         
-        /* Loading Spinner */
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             border-radius: 50%;
@@ -999,7 +939,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Login Styles */
         .login-container {
             max-width: 350px;
             margin: 60px auto;
@@ -1025,7 +964,6 @@
             font-size: 1.3rem;
         }
         
-        /* Glamping Selection */
         .glamping-option {
             border: 2px solid #ddd;
             border-radius: 6px;
@@ -1049,7 +987,6 @@
             cursor: not-allowed;
         }
         
-        /* Checkbox Selection */
         .checkbox-container {
             display: flex;
             align-items: center;
@@ -1062,7 +999,6 @@
             height: 16px;
         }
         
-        /* Payment Method Styles */
         .payment-option {
             border: 2px solid #ddd;
             border-radius: 6px;
@@ -1087,7 +1023,6 @@
             color: var(--primary-color);
         }
         
-        /* User Role Badges */
         .badge-admin {
             background-color: #9c27b0;
             color: white;
@@ -1103,7 +1038,6 @@
             color: white;
         }
         
-        /* Access Control */
         .access-control {
             margin-bottom: 12px;
             padding: 8px;
@@ -1123,7 +1057,6 @@
             border-bottom: none;
         }
         
-        /* Bank Info Styles */
         .bank-info {
             background-color: #f8f9fa;
             border-left: 4px solid var(--primary-color);
@@ -1137,7 +1070,6 @@
             margin-bottom: 8px;
         }
         
-        /* User Profile */
         .user-profile {
             display: flex;
             align-items: center;
@@ -1157,7 +1089,6 @@
             font-size: 0.9rem;
         }
         
-        /* Touch Friendly */
         button, 
         input[type="button"], 
         input[type="submit"], 
@@ -1167,24 +1098,20 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Prevent text selection on interactive elements */
         .btn, .tab, .lapak-item {
             user-select: none;
             -webkit-user-select: none;
         }
         
-        /* Mobile optimization for forms */
         input, select, textarea {
-            font-size: 16px !important; /* Prevents zoom on iOS */
+            font-size: 16px !important;
         }
         
-        /* Better touch feedback */
         .btn:active, .tab:active, .lapak-item:active {
             opacity: 0.8;
             transform: scale(0.98);
         }
         
-        /* Akomodasi Lainnya Styles */
         .akomodasi-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -1229,7 +1156,6 @@
             font-size: 0.9rem;
         }
         
-        /* Akomodasi Checkbox */
         .akomodasi-checkbox {
             display: flex;
             align-items: center;
@@ -1240,7 +1166,6 @@
             margin-right: 6px;
         }
         
-        /* Style untuk form edit invoice */
         #invoice-edit-form {
             background-color: #f8f9fa;
             padding: 12px;
@@ -1249,7 +1174,6 @@
             margin-top: 15px;
         }
 
-        /* Style untuk preview hapus */
         #preview-hapus-container {
             border: 1px solid #ddd;
             border-radius: 5px;
@@ -1266,7 +1190,6 @@
             background-color: #f1f8e9;
         }
         
-        /* Edit invoice form improvements */
         #edit-diskon-nilai:disabled {
             background-color: #e9ecef;
             cursor: not-allowed;
@@ -1280,12 +1203,10 @@
             font-size: 0.85rem;
         }
         
-        /* Mobile optimizations for pengaturan tabs */
         .pengaturan-tab-content {
             padding: 10px 0;
         }
         
-        /* Scroll to top button for mobile */
         .scroll-top {
             position: fixed;
             bottom: 20px;
@@ -1308,7 +1229,6 @@
             background-color: var(--dark-color);
         }
         
-        /* Input group for mobile */
         .input-group {
             display: flex;
             flex-wrap: wrap;
@@ -1316,7 +1236,6 @@
             align-items: center;
         }
         
-        /* Fix for select dropdown on iOS */
         select.form-control {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -1328,7 +1247,6 @@
             padding-right: 35px;
         }
         
-        /* Mobile menu animation */
         @keyframes slideDown {
             from {
                 opacity: 0;
@@ -1346,7 +1264,6 @@
     </style>
 </head>
 <body>
-    <!-- Scroll to top button -->
     <div class="scroll-top" onclick="scrollToTop()">
         <i class="fas fa-chevron-up"></i>
     </div>
@@ -1429,7 +1346,6 @@
         </header>
 
         <div class="container">
-            <!-- Dashboard Section -->
             <section id="dashboard-section" class="content-section">
                 <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Dashboard Monitoring</h2>
                 
@@ -1508,7 +1424,6 @@
                 </div>
             </section>
 
-            <!-- Reservasi Section -->
             <section id="reservasi-section" class="content-section hidden">
                 <h2 class="section-title"><i class="fas fa-calendar-plus"></i> Form Reservasi Baru</h2>
                 <div class="alert alert-info">
@@ -1576,13 +1491,11 @@
                             </div>
                         <small class="text-muted mt-2 d-block">Lapak dipilih: <span id="lapak-dipilih-tenda-count">0</span></small>
 
-                        <!-- TABEL AKOMODASI LAINNYA TAMBAHAN -->
                         <h4 class="section-title mt-3"><i class="fas fa-utensils"></i> Akomodasi Lainnya (Opsional)</h4>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle"></i> Pilih akomodasi tambahan sesuai kebutuhan.
                         </div>
                         <div class="akomodasi-container" id="akomodasi-tenda-container">
-                            <!-- Akomodasi akan di-generate oleh JavaScript -->
                         </div>
                         <small class="text-muted mt-2 d-block">Akomodasi dipilih: <span id="akomodasi-dipilih-tenda-count">0</span></small>
 
@@ -1690,13 +1603,11 @@
                             </div>
                         <small class="text-muted mt-2 d-block">Glamping dipilih: <span id="glamping-dipilih-count">0</span></small>
 
-                        <!-- TABEL AKOMODASI LAINNYA TAMBAHAN UNTUK GLAMPING -->
                         <h4 class="section-title mt-3"><i class="fas fa-utensils"></i> Akomodasi Lainnya (Opsional)</h4>
                         <div class="alert alert-info">
                             <i class="fas fa-info-circle"></i> Pilih akomodasi tambahan sesuai kebutuhan.
                         </div>
                         <div class="akomodasi-container" id="akomodasi-glamping-container">
-                            <!-- Akomodasi akan di-generate oleh JavaScript -->
                         </div>
                         <small class="text-muted mt-2 d-block">Akomodasi dipilih: <span id="akomodasi-dipilih-glamping-count">0</span></small>
 
@@ -1751,7 +1662,6 @@
                 </div>
             </section>
 
-            <!-- Lapak Section -->
             <section id="lapak-section" class="content-section hidden">
                 <h2 class="section-title"><i class="fas fa-map-marked-alt"></i> Visualisasi Status Lapak/Glamping</h2>
                 
@@ -1804,7 +1714,6 @@
                 </div>
             </section>
 
-            <!-- Invoice Section -->
             <section id="invoice-section" class="content-section hidden">
                 <h2 class="section-title"><i class="fas fa-file-invoice-dollar"></i> Daftar Invoice Reservasi</h2>
                 <div class="form-row">
@@ -1901,7 +1810,6 @@
                 </div>
             </section>
 
-            <!-- Laporan Section -->
             <section id="laporan-section" class="content-section hidden">
                 <h2 class="section-title"><i class="fas fa-chart-bar"></i> Laporan dan Statistik</h2>
                 
@@ -1986,7 +1894,6 @@
                 </div>
             </section>
 
-            <!-- Pengaturan Section - IMPROVED FOR MOBILE -->
             <section id="pengaturan-section" class="content-section hidden admin-only">
                 <h2 class="section-title"><i class="fas fa-cog"></i> Pengaturan Sistem</h2>
                 <div class="alert alert-warning admin-only">
@@ -2192,7 +2099,6 @@
                         </div>
                     </div>
                     
-                    <!-- FITUR BARU: HAPUS INVOICE TERPILIH -->
                     <hr>
                     
                     <div class="form-row mt-3">
@@ -2275,7 +2181,6 @@
                 </div>
             </section>
 
-            <!-- Users Section -->
             <section id="users-section" class="content-section hidden admin-only">
                 <h2 class="section-title"><i class="fas fa-users"></i> Manajemen Pengguna</h2>
                 <div class="alert alert-warning admin-only">
@@ -2330,7 +2235,6 @@
                 </div>
             </section>
 
-            <!-- Backup Section -->
             <section id="backup-section" class="content-section hidden admin-only">
                 <h2 class="section-title"><i class="fas fa-database"></i> Backup & Restore Data</h2>
                 <div class="alert alert-warning admin-only">
@@ -2517,7 +2421,6 @@
             </section>
         </div>
 
-        <!-- MODAL INVOICE DENGAN FITUR EDIT -->
         <div id="invoice-modal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -2525,10 +2428,8 @@
                     <button class="modal-close" onclick="closeInvoiceModal()">&times;</button>
                 </div>
                 <div id="invoice-detail-content">
-                    <!-- Konten invoice akan diisi oleh JavaScript -->
                 </div>
                 
-                <!-- FORM EDIT INVOICE DENGAN FITUR DISKON DAN PEMANDU -->
                 <div id="invoice-edit-form" class="hidden mt-3">
                     <h4 class="section-title"><i class="fas fa-edit"></i> Edit Invoice</h4>
                     <div class="form-row">
@@ -2658,9 +2559,6 @@
     </div>
     
     <script>
-        // Fix untuk bug dan peningkatan responsivitas
-        
-        // Utility Functions
         function formatRupiah(number) {
             if (isNaN(number)) number = 0;
             return new Intl.NumberFormat('id-ID', {
@@ -2713,12 +2611,10 @@
             document.getElementById('loading-modal').style.display = 'none';
         }
         
-        // Scroll to top function
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
-        // Show scroll to top button on scroll
         window.addEventListener('scroll', function() {
             const scrollTopBtn = document.querySelector('.scroll-top');
             if (window.scrollY > 300) {
@@ -2728,9 +2624,6 @@
             }
         });
 
-        // --- Data Handling ---
-        
-        // Initial Data
         let dataApp = {
             reservasi: [],
             invoice: [],
@@ -2825,14 +2718,12 @@
             user: null,
         };
 
-        // Load data dari localStorage
         function loadFromLocalStorage() {
             try {
                 const storedData = localStorage.getItem('reservasiDataBSA');
                 if (storedData) {
                     const loadedData = JSON.parse(storedData);
                     
-                    // Merge data dengan hati-hati
                     dataApp.reservasi = loadedData.reservasi || [];
                     dataApp.invoice = loadedData.invoice || [];
                     dataApp.lapakTenda = loadedData.lapakTenda || dataApp.lapakTenda;
@@ -2841,7 +2732,6 @@
                     dataApp.akomodasiLainnya = loadedData.akomodasiLainnya || dataApp.akomodasiLainnya;
                     dataApp.users = loadedData.users || dataApp.users;
                     
-                    // Pastikan pengaturan ada
                     if (loadedData.pengaturan) {
                         dataApp.pengaturan = { ...dataApp.pengaturan, ...loadedData.pengaturan };
                         if (loadedData.pengaturan.perusahaan) {
@@ -2849,9 +2739,7 @@
                         }
                     }
                     
-                    // Validasi data penting
                     if (!dataApp.lapakTenda || dataApp.lapakTenda.length === 0) {
-                        // Reset ke data default jika data lapak kosong
                         dataApp.lapakTenda = [
                             { kode: 'D01', harga: 0, kapasitas: 4, status: 'tersedia' },
                             { kode: 'D02', harga: 0, kapasitas: 4, status: 'tersedia' },
@@ -2868,11 +2756,9 @@
                 }
             } catch (e) {
                 console.error('Error loading from localStorage:', e);
-                // Tetap gunakan data default jika error
             }
         }
 
-        // Save data ke localStorage
         function saveToLocalStorage() {
             try {
                 const dataToSave = {
@@ -2892,8 +2778,6 @@
                 alert('Gagal menyimpan data ke localStorage. Kemungkinan storage penuh.');
             }
         }
-
-        // --- Authentication ---
 
         function login() {
             const usernameInput = document.getElementById('username').value.trim();
@@ -2928,12 +2812,9 @@
                 document.getElementById('login-form').reset();
                 document.getElementById('login-error').classList.add('hidden');
                 
-                // Close mobile menu if open
                 document.getElementById('main-nav').classList.remove('active');
             }
         }
-
-        // --- Initialization ---
 
         function initializeApp() {
             const user = dataApp.user;
@@ -2964,14 +2845,12 @@
                 }
             });
 
-            // Set today's date for filters
             const today = formatDate(new Date());
             document.getElementById('filter-tanggal').value = today;
             document.getElementById('tanggal-visualisasi').value = today;
 
             showSection('dashboard');
 
-            // Update all displays
             updateDashboard();
             updateLapakStatus();
             updateGlampingStatus();
@@ -2986,17 +2865,13 @@
             loadInvoiceOptions();
             loadPengaturanData();
             
-            // Initialize akomodasi selection
             generateAkomodasiOptions('tenda');
             generateAkomodasiOptions('glamping');
             
-            // Update footer info
             document.getElementById('footer-no-layanan').textContent = dataApp.pengaturan.perusahaan.noLayanan;
             
-            // Hide mobile menu on initialization
             document.getElementById('main-nav').classList.remove('active');
             
-            // Update backup counts
             updateBackupCounts();
         }
 
@@ -3042,7 +2917,6 @@
                 updateLapakStatus();
                 updateGlampingStatus();
                 
-                // Reset akomodasi selection
                 dataApp.akomodasiLainnya.forEach(akomodasi => {
                     akomodasi.status = 'tersedia';
                     akomodasi.jumlah = 0;
@@ -3069,7 +2943,6 @@
                 updateBackupCounts();
             }
             
-            // Scroll to top when changing sections
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
         
@@ -3077,7 +2950,6 @@
             const nav = document.getElementById('main-nav');
             nav.classList.toggle('active');
             
-            // Toggle icon
             const menuIcon = document.querySelector('.menu-toggle i');
             if (nav.classList.contains('active')) {
                 menuIcon.classList.remove('fa-bars');
@@ -3087,8 +2959,6 @@
                 menuIcon.classList.add('fa-bars');
             }
         }
-
-        // --- Dashboard & Status ---
 
         function getReservedCodes(jenis, tanggal) {
             const reserved = [];
@@ -3205,8 +3075,6 @@
             });
         }
 
-        // --- Reservasi Form ---
-
         function hitungJumlahMalam(jenis) {
             const checkinInput = document.getElementById(`tanggal-checkin-${jenis}`);
             const checkoutInput = document.getElementById(`tanggal-checkout-${jenis}`);
@@ -3261,7 +3129,6 @@
             const lapakContainer = document.getElementById('lapak-pilih-container');
             lapakContainer.innerHTML = '';
 
-            // Reset status dipilih
             dataApp.lapakTenda.forEach(lapak => {
                 if (lapak.status === 'dipilih') {
                     lapak.status = 'tersedia';
@@ -3300,7 +3167,6 @@
             const glampingContainer = document.getElementById('glamping-pilih-container');
             glampingContainer.innerHTML = '';
 
-            // Reset status dipilih
             dataApp.glamping.forEach(glamping => {
                 if (glamping.status === 'dipilih') {
                     glamping.status = 'tersedia';
@@ -3391,7 +3257,6 @@
             hitungTotalBiayaGlamping();
         }
 
-        // Akomodasi Lainnya Functions
         function generateAkomodasiOptions(jenis) {
             const container = document.getElementById(`akomodasi-${jenis}-container`);
             if (!container) return;
@@ -3529,7 +3394,6 @@
 
             const totalBiayaTiket = jumlahOrang * jumlahMalam * hargaTiket;
             
-            // Hitung biaya akomodasi lainnya
             let totalBiayaAkomodasi = 0;
             const akomodasiTerpilih = dataApp.akomodasiLainnya.filter(a => a.status === 'dipilih' && a.jumlah > 0);
             akomodasiTerpilih.forEach(akomodasi => {
@@ -3550,7 +3414,6 @@
             document.getElementById('biaya-tiket-malam').textContent = jumlahMalam;
             document.getElementById('biaya-tiket-tenda').textContent = formatRupiah(totalBiayaTiket);
             
-            // Update akomodasi display
             const akomodasiRow = document.getElementById('akomodasi-row-tenda');
             const akomodasiCount = akomodasiTerpilih.length;
             document.getElementById('akomodasi-dipilih-tenda-count').textContent = akomodasiCount;
@@ -3581,7 +3444,6 @@
 
             const totalBiayaTiket = jumlahOrang * jumlahMalam * hargaTiket;
             
-            // Hitung biaya akomodasi lainnya
             let totalBiayaAkomodasi = 0;
             const akomodasiTerpilih = dataApp.akomodasiLainnya.filter(a => a.status === 'dipilih' && a.jumlah > 0);
             akomodasiTerpilih.forEach(akomodasi => {
@@ -3602,7 +3464,6 @@
             document.getElementById('biaya-tiket-malam-glamping').textContent = jumlahMalam;
             document.getElementById('biaya-tiket-glamping').textContent = formatRupiah(totalBiayaTiket);
             
-            // Update akomodasi display
             const akomodasiRow = document.getElementById('akomodasi-row-glamping');
             const akomodasiCount = akomodasiTerpilih.length;
             document.getElementById('akomodasi-dipilih-glamping-count').textContent = akomodasiCount;
@@ -3659,7 +3520,6 @@
                 status = 'aktif';
             }
 
-            // Get selected akomodasi
             const akomodasiTerpilih = dataApp.akomodasiLainnya
                 .filter(a => a.status === 'dipilih' && a.jumlah > 0)
                 .map(a => ({
@@ -3713,12 +3573,10 @@
                 status: status,
             };
 
-            // Reset selected items status
             selectedItems.forEach(item => {
                 item.status = 'tersedia';
             });
             
-            // Reset akomodasi selection
             dataApp.akomodasiLainnya.forEach(akomodasi => {
                 akomodasi.status = 'tersedia';
                 akomodasi.jumlah = 0;
@@ -3730,7 +3588,6 @@
 
             form.reset();
             
-            // Reset to default dates
             const today = formatDate(new Date());
             const nextDay = formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
             
@@ -3754,8 +3611,6 @@
             showInvoiceModal(newInvoice.invoice);
         }
 
-        // --- Invoice Section ---
-        
         function generateInvoiceList() {
             const tbody = document.getElementById('invoice-list');
             tbody.innerHTML = '';
@@ -3816,13 +3671,11 @@
             const content = document.getElementById('invoice-detail-content');
             content.innerHTML = generateInvoiceHTML(invoice);
             
-            // Show/hide buttons based on invoice status
             document.getElementById('btn-batalkan-invoice').style.display = (invoice.status === 'pending' || invoice.status === 'dibayar') ? 'inline-flex' : 'none';
             document.getElementById('btn-checkin-invoice').style.display = (invoice.status === 'dibayar' || invoice.status === 'pending') ? 'inline-flex' : 'none';
             document.getElementById('btn-checkout-invoice').style.display = (invoice.status === 'aktif') ? 'inline-flex' : 'none';
             document.getElementById('btn-update-pembayaran').style.display = (invoice.status === 'pending' || invoice.status === 'dibayar') ? 'inline-flex' : 'none';
 
-            // Reset edit form
             document.getElementById('invoice-edit-form').classList.add('hidden');
             document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
 
@@ -3834,7 +3687,6 @@
             generateInvoiceList();
         }
 
-        // FITUR BARU: EDIT INVOICE DENGAN DISKON DAN PEMANDU
         function toggleEditInvoiceForm() {
             const editForm = document.getElementById('invoice-edit-form');
             const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
@@ -3843,7 +3695,6 @@
             if (!invoice) return;
             
             if (editForm.classList.contains('hidden')) {
-                // Show edit form
                 document.getElementById('edit-nama-pemandu').value = invoice.namaPemandu || '';
                 document.getElementById('edit-diskon-tipe').value = invoice.diskonTipe || 'none';
                 document.getElementById('edit-diskon-nilai').value = invoice.diskonNilai || 0;
@@ -3853,7 +3704,6 @@
                 editForm.classList.remove('hidden');
                 document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-times"></i> Tutup Edit';
             } else {
-                // Hide edit form
                 editForm.classList.add('hidden');
                 document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
             }
@@ -3882,7 +3732,6 @@
         }
 
         function hitungDiskon() {
-            // Akan dihitung saat simpan
         }
 
         function simpanEditInvoice() {
@@ -3891,17 +3740,14 @@
             
             if (!invoice) return;
             
-            // Get values from form
             invoice.namaPemandu = document.getElementById('edit-nama-pemandu').value;
             invoice.diskonTipe = document.getElementById('edit-diskon-tipe').value;
             invoice.diskonNilai = parseFloat(document.getElementById('edit-diskon-nilai').value) || 0;
             invoice.catatan = document.getElementById('edit-catatan').value;
             
-            // Calculate discount
             let diskonAmount = 0;
             let totalBiayaSebelumDiskon = invoice.totalBiaya || 0;
             
-            // Kurangi biaya sewa barang untuk perhitungan diskon (jika ada)
             let totalBiayaSewaBarang = 0;
             if (invoice.barangSewa && invoice.barangSewa.length > 0) {
                 invoice.barangSewa.forEach(sewa => {
@@ -3917,17 +3763,14 @@
                 diskonAmount = invoice.diskonNilai;
             }
             
-            // Ensure discount doesn't exceed total
             if (diskonAmount > totalBiayaSebelumDiskon) {
                 diskonAmount = totalBiayaSebelumDiskon;
             }
             
             invoice.diskonAmount = diskonAmount;
             
-            // Recalculate total with discount
             invoice.totalBiaya = totalBiayaSebelumDiskon - diskonAmount + totalBiayaSewaBarang;
             
-            // Recalculate DP if payment method is transfer
             if (invoice.paymentMethod === 'transfer') {
                 const dpPercentage = dataApp.pengaturan.dpPercentage;
                 invoice.dp = invoice.totalBiaya * (dpPercentage / 100);
@@ -3942,11 +3785,9 @@
             
             saveToLocalStorage();
             
-            // Update invoice display
             const content = document.getElementById('invoice-detail-content');
             content.innerHTML = generateInvoiceHTML(invoice);
             
-            // Hide edit form
             document.getElementById('invoice-edit-form').classList.add('hidden');
             document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
             
@@ -4014,7 +3855,6 @@
             `;
             totalBiayaSebelumDiskon += totalBiayaTiket;
 
-            // Add akomodasi lainnya
             if (invoice.akomodasiLainnya && invoice.akomodasiLainnya.length > 0) {
                 invoice.akomodasiLainnya.forEach(akomodasi => {
                     itemsHTML += `
@@ -4054,7 +3894,6 @@
 
             const sisaPembayaran = (invoice.totalBiaya || 0) - (invoice.paymentMethod === 'transfer' ? (invoice.dp || 0) : (invoice.paymentMethod === 'lokasi' ? 0 : (invoice.totalBiaya || 0)));
 
-            // Diskon HTML
             let diskonHTML = '';
             if (invoice.diskonTipe && invoice.diskonTipe !== 'none' && invoice.diskonAmount > 0) {
                 const diskonLabel = invoice.diskonTipe === 'percentage' ? 
@@ -4084,7 +3923,6 @@
 
             let extraInfoHTML = '';
             
-            // Add nama pemandu jika ada
             if (invoice.namaPemandu) {
                 extraInfoHTML += `
                     <div class="alert alert-secondary mt-2">
@@ -4093,7 +3931,6 @@
                 `;
             }
             
-            // Add catatan jika ada
             if (invoice.catatan) {
                 extraInfoHTML += `
                     <div class="alert alert-info mt-3">
@@ -4371,7 +4208,6 @@
             ]);
             totalAkomodasiTiket += (invoice.jumlahOrang || 0) * (invoice.jumlahMalam || 0) * perusahaan.hargaTiket;
 
-            // Add akomodasi lainnya
             if (invoice.akomodasiLainnya && invoice.akomodasiLainnya.length > 0) {
                 invoice.akomodasiLainnya.forEach(akomodasi => {
                     tableData.push([
@@ -4401,7 +4237,6 @@
                 [{ content: "TOTAL BIAYA AKOMODASI & TIKET", colSpan: 3, styles: { halign: 'right', fontStyle: 'bold' } }, { content: formatRupiah(totalAkomodasiTiket), styles: { fontStyle: 'bold' } }],
             ];
             
-            // Add discount if exists
             if (invoice.diskonTipe && invoice.diskonTipe !== 'none' && invoice.diskonAmount > 0) {
                 const diskonLabel = invoice.diskonTipe === 'percentage' ? 
                     `Diskon (${invoice.diskonNilai}%)` : `Diskon`;
@@ -4442,7 +4277,6 @@
                 }
             });
 
-            // Add guide name if exists
             if (invoice.namaPemandu) {
                 let guideY = finalY + 10;
                 doc.setFontSize(10);
@@ -4468,7 +4302,6 @@
                 finalY = paymentY;
             }
 
-            // Add notes if exists
             if (invoice.catatan) {
                 let notesY = finalY + 10;
                 doc.setFontSize(9);
@@ -4498,8 +4331,6 @@
 
             doc.save(`Invoice-${invoiceNumber}.pdf`);
         }
-
-        // --- Lapak Visualisasi Section ---
 
         function updateLapakVisualization() {
             const tanggalVis = document.getElementById('tanggal-visualisasi').value || formatDate(new Date());
@@ -4557,8 +4388,6 @@
             tabElement.classList.add('active');
             document.getElementById(target).classList.add('active');
         }
-
-        // --- Sewa Barang Manual di Invoice Section ---
         
         function loadInvoiceOptions() {
             const select = document.getElementById('invoice-sewa-barang');
@@ -4690,7 +4519,6 @@
             const totalBiayaTiket = (invoice.jumlahOrang || 0) * (invoice.jumlahMalam || 0) * perusahaan.hargaTiket;
             totalBiayaAkomodasi += totalBiayaTiket;
             
-            // Add akomodasi lainnya biaya
             if (invoice.akomodasiLainnya && invoice.akomodasiLainnya.length > 0) {
                 invoice.akomodasiLainnya.forEach(akomodasi => {
                     totalBiayaAkomodasi += akomodasi.totalBiaya || 0;
@@ -4726,8 +4554,6 @@
             }
         }
 
-        // --- Laporan Section ---
-        
         function toggleTanggalKustom() {
             const periode = document.getElementById('periode-laporan').value;
             const customInputs = document.getElementById('periode-kustom-inputs');
@@ -4894,8 +4720,6 @@
             doc.save(`Laporan-Transaksi-${laporanName}.pdf`);
         }
 
-        // --- Pengaturan Section ---
-
         function loadPengaturanData() {
             const p = dataApp.pengaturan;
             const comp = p.perusahaan;
@@ -4948,11 +4772,9 @@
             tabElement.classList.add('active');
             document.getElementById(`tab-${target}`).style.display = 'block';
             
-            // Scroll to top of tab content
             document.getElementById(`tab-${target}`).scrollIntoView({ behavior: 'smooth' });
         }
 
-        // Lapak Tenda Management
         function generatePengaturanLapak() {
             const tbody = document.getElementById('pengaturan-lapak');
             tbody.innerHTML = '';
@@ -5022,7 +4844,6 @@
             saveToLocalStorage();
         }
 
-        // Glamping Management
         function generatePengaturanGlamping() {
             const tbody = document.getElementById('pengaturan-glamping');
             tbody.innerHTML = '';
@@ -5096,7 +4917,6 @@
             saveToLocalStorage();
         }
         
-        // Barang Sewa Management
         function generatePengaturanBarang() {
             const tbody = document.getElementById('pengaturan-barang');
             tbody.innerHTML = '';
@@ -5163,7 +4983,6 @@
             saveToLocalStorage();
         }
         
-        // Akomodasi Lainnya Management
         function generatePengaturanAkomodasi() {
             const tbody = document.getElementById('pengaturan-akomodasi');
             tbody.innerHTML = '';
@@ -5232,8 +5051,6 @@
             saveToLocalStorage();
         }
         
-        // --- Admin Tools ---
-
         function hapusInvoiceBulanLalu() {
             if (!dataApp.user || dataApp.user.role !== 'admin') return;
 
@@ -5312,7 +5129,6 @@
             alert(`${resetCount} lapak/glamping dari ${reservationsToReset.length} reservasi Check-out hari ini telah di-reset menjadi 'tersedia' dan status reservasi diubah menjadi 'selesai'.`);
         }
 
-        // FITUR BARU: HAPUS INVOICE TERPILIH BERDASARKAN FILTER
         function previewInvoiceTerpilih() {
             const invoices = filterInvoicesForDeletion();
             const container = document.getElementById('preview-hapus-container');
@@ -5358,7 +5174,6 @@
             const status = document.getElementById('hapus-filter-status').value;
             
             return dataApp.invoice.filter(invoice => {
-                // Filter by date range
                 if (tanggalMulai && tanggalSelesai) {
                     const invoiceDate = new Date(invoice.tanggalReservasi + 'T00:00:00');
                     const startDate = new Date(tanggalMulai + 'T00:00:00');
@@ -5369,12 +5184,10 @@
                     }
                 }
                 
-                // Filter by jenis
                 if (jenis && invoice.jenis !== jenis) {
                     return false;
                 }
                 
-                // Filter by status
                 if (status && invoice.status !== status) {
                     return false;
                 }
@@ -5402,16 +5215,12 @@
                 return;
             }
             
-            // Get invoice numbers to delete
             const invoiceNumbersToDelete = invoicesToDelete.map(inv => inv.invoice);
             
-            // Delete from invoice array
             dataApp.invoice = dataApp.invoice.filter(inv => !invoiceNumbersToDelete.includes(inv.invoice));
             
-            // Delete from reservasi array
             dataApp.reservasi = dataApp.reservasi.filter(res => !invoiceNumbersToDelete.includes(res.invoice));
             
-            // Reset form
             document.getElementById('hapus-filter-tanggal-mulai').value = '';
             document.getElementById('hapus-filter-tanggal-selesai').value = '';
             document.getElementById('hapus-filter-jenis').value = '';
@@ -5421,7 +5230,6 @@
             
             saveToLocalStorage();
             
-            // Refresh all related displays
             generateInvoiceList();
             updateDashboard();
             updateLapakVisualization();
@@ -5429,8 +5237,6 @@
             
             alert(`${invoicesToDelete.length} invoice berhasil dihapus.`);
         }
-
-        // --- User Management ---
 
         function generateUsersList() {
             const tbody = document.getElementById('users-list');
@@ -5553,8 +5359,6 @@
             }
         }
         
-        // --- Backup & Restore Functions ---
-        
         function updateBackupCounts() {
             document.getElementById('count-reservasi').textContent = dataApp.reservasi.length;
             document.getElementById('count-lapak').textContent = dataApp.lapakTenda.length;
@@ -5607,7 +5411,6 @@
                 const password = document.getElementById('backup-password').value.trim();
                 let backupString = JSON.stringify(backupData, null, 2);
                 
-                // Simple encryption if password provided
                 if (password) {
                     backupString = btoa(backupString + '|' + password);
                 }
@@ -5623,13 +5426,11 @@
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
                 
-                // Show success message
                 const successMsg = document.getElementById('backup-success');
                 const errorMsg = document.getElementById('backup-error');
                 successMsg.classList.remove('hidden');
                 errorMsg.classList.add('hidden');
                 
-                // Hide success message after 3 seconds
                 setTimeout(() => {
                     successMsg.classList.add('hidden');
                 }, 3000);
@@ -5661,7 +5462,6 @@
                 const password = document.getElementById('backup-password').value.trim();
                 let backupString = JSON.stringify(backupData, null, 2);
                 
-                // Simple encryption if password provided
                 if (password) {
                     backupString = btoa(backupString + '|' + password);
                 }
@@ -5723,12 +5523,9 @@
             try {
                 let parsedData;
                 
-                // Check if data is encrypted (base64)
                 if (backupString.includes('|') && backupString === atob(backupString)) {
-                    // Not encrypted, try to parse directly
                     parsedData = JSON.parse(backupString);
                 } else {
-                    // Try to decode base64
                     try {
                         const decoded = atob(backupString);
                         if (password) {
@@ -5740,7 +5537,6 @@
                                 return;
                             }
                         } else {
-                            // Try to parse without password
                             const parts = decoded.split('|');
                             if (parts.length === 2) {
                                 showRestoreError('Backup ini dienkripsi dengan password. Masukkan password yang benar.');
@@ -5750,18 +5546,15 @@
                             }
                         }
                     } catch (e) {
-                        // Not base64, try to parse as plain JSON
                         parsedData = JSON.parse(backupString);
                     }
                 }
                 
-                // Validate backup data structure
                 if (!parsedData || typeof parsedData !== 'object') {
                     showRestoreError('Format data backup tidak valid!');
                     return;
                 }
                 
-                // Ask for confirmation
                 if (!confirm(`PERINGATAN! Restore data akan menggantikan semua data yang ada. 
                 
 Data yang akan direstore:
@@ -5774,7 +5567,6 @@ Lanjutkan?`)) {
                     return;
                 }
                 
-                // Restore data
                 dataApp.reservasi = parsedData.reservasi || [];
                 dataApp.invoice = parsedData.invoice || [];
                 dataApp.lapakTenda = parsedData.lapakTenda || dataApp.lapakTenda;
@@ -5782,13 +5574,10 @@ Lanjutkan?`)) {
                 dataApp.barangSewa = parsedData.barangSewa || dataApp.barangSewa;
                 dataApp.akomodasiLainnya = parsedData.akomodasiLainnya || dataApp.akomodasiLainnya;
                 
-                // Preserve current user if not in backup
                 const currentUser = dataApp.user;
                 dataApp.users = parsedData.users || dataApp.users;
                 
-                // Don't restore pengaturan if it might break the system
                 if (parsedData.pengaturan) {
-                    // Merge pengaturan carefully
                     dataApp.pengaturan = { ...dataApp.pengaturan, ...parsedData.pengaturan };
                     if (parsedData.pengaturan.perusahaan) {
                         dataApp.pengaturan.perusahaan = { 
@@ -5798,7 +5587,6 @@ Lanjutkan?`)) {
                     }
                 }
                 
-                // Restore current user
                 if (currentUser) {
                     const userExists = dataApp.users.some(u => u.id === currentUser.id);
                     if (!userExists) {
@@ -5809,18 +5597,15 @@ Lanjutkan?`)) {
                 
                 saveToLocalStorage();
                 
-                // Show success message
                 const successMsg = document.getElementById('restore-success');
                 const errorMsg = document.getElementById('restore-error');
                 successMsg.classList.remove('hidden');
                 errorMsg.classList.add('hidden');
                 
-                // Reset form
                 document.getElementById('backup-file').value = '';
                 document.getElementById('backup-text').value = '';
                 document.getElementById('restore-password').value = '';
                 
-                // Reload the app
                 setTimeout(() => {
                     location.reload();
                 }, 2000);
@@ -5872,10 +5657,8 @@ Lanjutkan?`)) {
         }
         
         function resetAllData() {
-            // Save current user
             const currentUser = dataApp.user;
             
-            // Reset to default data
             dataApp.reservasi = [];
             dataApp.invoice = [];
             dataApp.lapakTenda = [
@@ -5896,7 +5679,6 @@ Lanjutkan?`)) {
                 { id: 2, nama: "Kayu Bakar (1 pack)", harga: 10000, satuan: "pack", stok: 50, status: 'tersedia', jumlah: 0 },
             ];
             
-            // Preserve current user
             if (currentUser) {
                 dataApp.users = [
                     { id: 1, nama: currentUser.nama, username: currentUser.username, password: currentUser.password, role: currentUser.role },
@@ -5910,13 +5692,11 @@ Lanjutkan?`)) {
                 ];
             }
             
-            // Reset form
             document.getElementById('reset-confirm').value = '';
             
             saveToLocalStorage();
             alert('Sistem berhasil direset ke kondisi awal!');
             
-            // Reload the app
             setTimeout(() => {
                 location.reload();
             }, 1000);
@@ -5926,20 +5706,17 @@ Lanjutkan?`)) {
             dataApp.reservasi = [];
             dataApp.invoice = [];
             
-            // Reset form
             document.getElementById('reset-confirm').value = '';
             
             saveToLocalStorage();
             alert('Data transaksi berhasil direset!');
             
-            // Update displays
             generateInvoiceList();
             updateDashboard();
             filterLaporan();
         }
         
         function resetProductData() {
-            // Reset product data to defaults
             dataApp.lapakTenda = [
                 { kode: 'D01', harga: 0, kapasitas: 4, status: 'tersedia' },
                 { kode: 'D02', harga: 0, kapasitas: 4, status: 'tersedia' },
@@ -5965,13 +5742,11 @@ Lanjutkan?`)) {
                 { id: 4, nama: "Nasi Liwet Porsi Keluarga", harga: 20000, satuan: "porsi", stok: 30, status: 'tersedia', jumlah: 0 },
             ];
             
-            // Reset form
             document.getElementById('reset-confirm').value = '';
             
             saveToLocalStorage();
             alert('Data master produk berhasil direset ke default!');
             
-            // Update displays
             generatePengaturanLapak();
             generatePengaturanGlamping();
             generatePengaturanBarang();
@@ -5979,13 +5754,9 @@ Lanjutkan?`)) {
             updateDashboard();
         }
 
-        // --- Global Event Listeners ---
-
         document.addEventListener('DOMContentLoaded', (event) => {
-            // Load data
             loadFromLocalStorage();
             
-            // Set today's date for date inputs
             const today = formatDate(new Date());
             const dateInputs = document.querySelectorAll('input[type="date"]');
             dateInputs.forEach(input => {
@@ -5994,7 +5765,6 @@ Lanjutkan?`)) {
                 }
             });
 
-            // Check if user is logged in
             if (dataApp.user) {
                 document.getElementById('login-screen').style.display = 'none';
                 document.getElementById('main-app').style.display = 'block';
@@ -6004,7 +5774,6 @@ Lanjutkan?`)) {
                 document.getElementById('main-app').style.display = 'none';
             }
             
-            // Close modals when clicking outside
             window.onclick = function(event) {
                 const invoiceModal = document.getElementById('invoice-modal');
                 if (event.target === invoiceModal) {
@@ -6022,15 +5791,12 @@ Lanjutkan?`)) {
                 }
             };
             
-            // Handle Enter key in forms
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'button' && e.target.type !== 'submit') {
                     e.preventDefault();
-                    // Don't submit on Enter to prevent accidental form submission
                 }
             });
             
-            // Close mobile menu when clicking outside
             document.addEventListener('click', function(e) {
                 const nav = document.getElementById('main-nav');
                 const menuToggle = document.querySelector('.menu-toggle');
@@ -6045,9 +5811,7 @@ Lanjutkan?`)) {
                 }
             });
             
-            // Handle window resize
             window.addEventListener('resize', function() {
-                // Close mobile menu on larger screens
                 if (window.innerWidth > 768) {
                     document.getElementById('main-nav').classList.remove('active');
                     const menuIcon = document.querySelector('.menu-toggle i');
@@ -6058,17 +5822,7 @@ Lanjutkan?`)) {
                 }
             });
             
-            // Initialize event listeners
             document.getElementById('periode-laporan').addEventListener('change', toggleTanggalKustom);
-            
-            // Fix for mobile viewport height
-            function setVH() {
-                let vh = window.innerHeight * 0.01;
-                document.documentElement.style.setProperty('--vh', `${vh}px`);
-            }
-            
-            setVH();
-            window.addEventListener('resize', setVH);
         });
     </script>
 </body>
