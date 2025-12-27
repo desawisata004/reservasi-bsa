@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Reservasi Kemah Keluarga - Bukit Sampalan Asri (Firebase)</title>
+    <title>Reservasi Kemah Keluarga - Bukit Sampalan Asri</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
@@ -36,7 +36,6 @@
             color: #333;
             line-height: 1.6;
             overflow-x: hidden;
-            -webkit-text-size-adjust: 100%;
         }
         
         .container {
@@ -50,7 +49,7 @@
         header {
             background-color: var(--primary-color);
             color: white;
-            padding: 12px 0;
+            padding: 15px 0;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             position: sticky;
             top: 0;
@@ -70,48 +69,56 @@
         }
         
         .logo {
-            font-size: 1.8rem;
+            font-size: 2rem;
             margin-right: 10px;
         }
         
         .header-content h1 {
-            font-size: 1.3rem;
-            margin-bottom: 3px;
-            line-height: 1.2;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
         }
         
         .header-content p {
             opacity: 0.9;
-            font-size: 0.75rem;
-            display: none;
+            font-size: 0.8rem;
         }
         
         .auth-container {
             display: flex;
             align-items: center;
-            gap: 8px;
-            margin-left: auto;
+            gap: 10px;
         }
         
-        .auth-container span {
-            margin-right: 8px;
-            font-size: 0.85rem;
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1rem;
         }
         
         .logout-btn {
             background-color: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
-            padding: 6px 10px;
-            border-radius: 4px;
+            padding: 8px 15px;
+            border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
-            font-size: 0.85rem;
             display: flex;
             align-items: center;
-            justify-content: center;
-            min-height: 36px;
-            min-width: 36px;
+            gap: 5px;
         }
         
         .logout-btn:hover {
@@ -120,39 +127,75 @@
         
         /* Main Content */
         .main-content {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 15px 0;
-            gap: 15px;
+            margin: 20px 0;
         }
         
         .content-section {
-            flex: 1;
-            min-width: 280px;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            padding: 15px;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            padding: 20px;
+            margin-bottom: 20px;
         }
         
         .section-title {
             color: var(--primary-color);
             border-bottom: 2px solid var(--light-color);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
         }
         
         .section-title i {
-            margin-right: 8px;
+            margin-right: 10px;
+        }
+        
+        /* Dashboard Cards */
+        .dashboard-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .card-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .card-label {
+            color: var(--gray-color);
+            font-size: 0.9rem;
         }
         
         /* Form Styles */
         .form-group {
-            margin-bottom: 12px;
+            margin-bottom: 15px;
         }
         
         .form-group label {
@@ -160,18 +203,15 @@
             margin-bottom: 5px;
             font-weight: 500;
             color: var(--dark-color);
-            font-size: 0.9rem;
         }
         
         .form-control {
             width: 100%;
-            padding: 10px 12px;
+            padding: 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px !important;
+            font-size: 16px;
             transition: border 0.3s;
-            -webkit-appearance: none;
-            appearance: none;
         }
         
         .form-control:focus {
@@ -182,32 +222,27 @@
         .form-row {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 15px;
         }
         
         .form-row .form-group {
             flex: 1;
-            min-width: 150px;
+            min-width: 200px;
         }
         
         /* Button Styles */
         .btn {
-            padding: 10px 16px;
+            padding: 12px 20px;
             border: none;
             border-radius: 5px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
-            min-height: 44px;
-            min-width: 44px;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
+            gap: 8px;
         }
         
         .btn-primary {
@@ -219,14 +254,45 @@
             background-color: var(--dark-color);
         }
         
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: var(--primary-color);
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+        }
+        
+        .btn-warning {
+            background-color: var(--warning-color);
+            color: #333;
+        }
+        
+        .btn-warning:hover {
+            background-color: #ffb300;
+        }
+        
         .btn-block {
             width: 100%;
+        }
+        
+        .btn-sm {
+            padding: 8px 12px;
+            font-size: 0.9rem;
         }
         
         /* Table Styles */
         .table-responsive {
             overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
             width: 100%;
             margin-bottom: 1rem;
         }
@@ -235,24 +301,104 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            min-width: 600px;
         }
         
         .table th, .table td {
-            padding: 10px 8px;
+            padding: 12px;
             text-align: left;
             border-bottom: 1px solid #eee;
-            font-size: 0.85rem;
         }
         
         .table th {
             background-color: var(--light-color);
             color: var(--dark-color);
             font-weight: 600;
-            white-space: nowrap;
         }
         
-        /* Utility Classes */
+        .table tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid var(--light-color);
+            margin-bottom: 20px;
+        }
+        
+        .tab {
+            padding: 12px 20px;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background-color: rgba(0,0,0,0.05);
+        }
+        
+        .tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--light-color);
+            padding-bottom: 15px;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            color: var(--primary-color);
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-color);
+        }
+        
+        /* Utility */
         .hidden {
             display: none !important;
         }
@@ -274,10 +420,9 @@
         }
         
         .alert {
-            padding: 10px;
+            padding: 12px;
             border-radius: 5px;
-            margin-bottom: 12px;
-            font-size: 0.85rem;
+            margin-bottom: 15px;
         }
         
         .alert-success {
@@ -306,9 +451,9 @@
         
         .badge {
             display: inline-block;
-            padding: 3px 6px;
-            border-radius: 12px;
-            font-size: 0.7rem;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
             font-weight: 600;
         }
         
@@ -327,122 +472,121 @@
             color: white;
         }
         
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: flex-start;
-            padding: 15px;
-            overflow-y: auto;
+        .badge-primary {
+            background-color: var(--primary-color);
+            color: white;
         }
         
-        .modal-content {
-            background-color: white;
-            border-radius: 8px;
-            padding: 15px;
-            max-width: 700px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            border-bottom: 2px solid var(--light-color);
-            padding-bottom: 10px;
-        }
-        
-        .modal-title {
-            font-size: 1.2rem;
-            color: var(--primary-color);
-        }
-        
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.3rem;
-            cursor: pointer;
-            color: var(--gray-color);
-            padding: 5px;
-        }
-        
-        /* Loading Spinner */
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-radius: 50%;
-            border-top: 4px solid var(--primary-color);
-            width: 35px;
-            height: 35px;
-            animation: spin 1s linear infinite;
-            margin: 15px auto;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Login Styles */
+        /* Login */
         .login-container {
-            max-width: 350px;
-            margin: 60px auto;
-            padding: 20px;
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
             background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
         }
         
         .login-logo {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
         
         .login-logo i {
-            font-size: 2.2rem;
+            font-size: 3rem;
             color: var(--primary-color);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
         
         .login-logo h2 {
             color: var(--primary-color);
-            font-size: 1.3rem;
+            font-size: 1.5rem;
         }
         
-        /* Responsive Styles */
+        /* Database Selector */
+        .db-selector {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .db-option {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .db-option:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .db-option.active {
+            border-color: var(--primary-color);
+            background-color: var(--light-color);
+        }
+        
+        .db-option i {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+        
+        /* Responsive */
         @media (max-width: 768px) {
+            .dashboard-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
             .form-row {
                 flex-direction: column;
-                gap: 0;
             }
             
             .form-row .form-group {
                 min-width: 100%;
             }
             
-            .table {
-                min-width: 650px;
+            .header-top {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
             }
             
-            .header-content p {
-                display: block;
+            .auth-container {
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+            }
+            
+            .tab {
+                white-space: nowrap;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .dashboard-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .content-section {
+                padding: 15px;
+            }
+            
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Firebase Initialization -->
+    <!-- Firebase Configuration -->
     <script>
         // Firebase Configuration
         const firebaseConfig = {
@@ -454,18 +598,13 @@
             messagingSenderId: "883193001958",
             appId: "1:883193001958:web:9aa40ce72e83e0ac32c827"
         };
-
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
-        const auth = firebase.auth();
     </script>
 
     <div id="login-screen" class="login-container" style="display: block;">
         <div class="login-logo">
             <i class="fas fa-campground"></i>
             <h2>Bukit Sampalan Asri</h2>
-            <p>Sistem Reservasi Kemah Keluarga (Firebase)</p>
+            <p>Sistem Reservasi Kemah Keluarga</p>
         </div>
         
         <form id="login-form">
@@ -483,12 +622,25 @@
                 <i class="fas fa-exclamation-circle"></i> Username atau password salah!
             </div>
             
-            <button type="button" class="btn btn-primary btn-block" onclick="login()">
+            <div class="db-selector">
+                <div class="db-option active" onclick="selectDatabase('local')">
+                    <i class="fas fa-laptop"></i>
+                    <div>Local Storage</div>
+                    <small>Offline Mode</small>
+                </div>
+                <div class="db-option" onclick="selectDatabase('firebase')">
+                    <i class="fas fa-cloud"></i>
+                    <div>Firebase</div>
+                    <small>Online Mode</small>
+                </div>
+            </div>
+            
+            <button type="button" class="btn btn-primary btn-block mt-3" onclick="login()">
                 <i class="fas fa-sign-in-alt"></i> Login
             </button>
             
-            <div class="mt-3 text-center">
-                <small>Database: Firebase Realtime</small>
+            <div class="text-center mt-3">
+                <small>Default: admin / admin123</small>
             </div>
         </form>
     </div>
@@ -503,7 +655,7 @@
                         </div>
                         <div class="header-content">
                             <h1>Bukit Sampalan Asri</h1>
-                            <p>Sistem Reservasi Kemah Keluarga (Firebase)</p>
+                            <p id="db-status">Sistem Reservasi Kemah Keluarga - Local Storage</p>
                         </div>
                     </div>
                     
@@ -513,8 +665,8 @@
                                 A
                             </div>
                             <div>
-                                <span id="current-user"></span>
-                                <div id="user-role" style="font-size: 0.75rem; opacity: 0.9;"></div>
+                                <span id="current-user">Administrator</span>
+                                <div id="user-role" style="font-size: 0.8rem; opacity: 0.9;">Admin</div>
                             </div>
                         </div>
                         <button class="logout-btn" onclick="logout()" title="Logout">
@@ -523,306 +675,580 @@
                         </button>
                     </div>
                 </div>
+                
+                <nav>
+                    <div class="tabs">
+                        <div class="tab active" onclick="showSection('dashboard')">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </div>
+                        <div class="tab" onclick="showSection('reservasi')">
+                            <i class="fas fa-calendar-plus"></i> Reservasi
+                        </div>
+                        <div class="tab" onclick="showSection('invoice')">
+                            <i class="fas fa-file-invoice"></i> Invoice
+                        </div>
+                        <div class="tab" onclick="showSection('lapak')">
+                            <i class="fas fa-map-marked"></i> Lapak
+                        </div>
+                        <div class="tab" onclick="showSection('laporan')">
+                            <i class="fas fa-chart-bar"></i> Laporan
+                        </div>
+                        <div class="tab" onclick="showSection('pengaturan')">
+                            <i class="fas fa-cog"></i> Pengaturan
+                        </div>
+                    </div>
+                </nav>
             </div>
         </header>
 
         <div class="container">
-            <!-- Dashboard Section -->
-            <section id="dashboard-section" class="content-section">
-                <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Dashboard Monitoring</h2>
-                
-                <div class="alert alert-info mb-3">
-                    <i class="fas fa-database"></i> Data tersimpan di Firebase Realtime Database
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="filter-tanggal"><i class="fas fa-calendar-day"></i> Filter Status Tanggal</label>
-                        <input type="date" id="filter-tanggal" class="form-control" onchange="updateDashboard()">
+            <div class="main-content">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="content-section">
+                    <h2 class="section-title"><i class="fas fa-tachometer-alt"></i> Dashboard Monitoring</h2>
+                    
+                    <div class="alert alert-info mb-3" id="db-info-alert">
+                        <i class="fas fa-database"></i> Menggunakan Local Storage
                     </div>
-                </div>
+                    
+                    <div class="dashboard-cards">
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-campground"></i>
+                            </div>
+                            <div class="card-value" id="lapak-tersedia">0</div>
+                            <div class="card-label">Lapak Tersedia</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="card-value" id="glamping-tersedia">0</div>
+                            <div class="card-label">Glamping Tersedia</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="card-value" id="pengunjung-hari-ini">0</div>
+                            <div class="card-label">Pengunjung Hari Ini</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="card-value" id="omzet-harian">Rp 0</div>
+                            <div class="card-label">Omzet Harian</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-calendar-day"></i> Reservasi Hari Ini</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Nama Pemesan</th>
+                                    <th>Jenis</th>
+                                    <th>Check-in</th>
+                                    <th>Check-out</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservasi-hari-ini">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-                <div class="table-responsive mt-3">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Statistik</th>
-                                <th>Nilai</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Total Reservasi</td>
-                                <td id="total-reservasi">0</td>
-                            </tr>
-                            <tr>
-                                <td>Total Invoice</td>
-                                <td id="total-invoice">0</td>
-                            </tr>
-                            <tr>
-                                <td>Total Pengguna</td>
-                                <td id="total-users">0</td>
-                            </tr>
-                            <tr>
-                                <td>Status Koneksi</td>
-                                <td id="connection-status">Menyambungkan...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+                <!-- Reservasi Section -->
+                <section id="reservasi-section" class="content-section hidden">
+                    <h2 class="section-title"><i class="fas fa-calendar-plus"></i> Form Reservasi Baru</h2>
+                    
+                    <div class="tabs mb-3">
+                        <div class="tab active" onclick="changeReservasiTab('tenda')">
+                            <i class="fas fa-campground"></i> Lapak Tenda
+                        </div>
+                        <div class="tab" onclick="changeReservasiTab('glamping')">
+                            <i class="fas fa-home"></i> Glamping
+                        </div>
+                    </div>
+                    
+                    <!-- Tenda Tab -->
+                    <div id="tenda-tab" class="tab-content active">
+                        <form id="reservasi-tenda-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nama-tenda">Nama Pemesan</label>
+                                    <input type="text" id="nama-tenda" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telepon-tenda">Telepon/WA</label>
+                                    <input type="tel" id="telepon-tenda" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="checkin-tenda">Check-in</label>
+                                    <input type="date" id="checkin-tenda" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="checkout-tenda">Check-out</label>
+                                    <input type="date" id="checkout-tenda" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="jumlah-orang-tenda">Jumlah Orang</label>
+                                    <input type="number" id="jumlah-orang-tenda" class="form-control" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="lapak-tenda">Pilih Lapak</label>
+                                    <select id="lapak-tenda" class="form-control" required>
+                                        <option value="">Pilih Lapak</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="total-biaya-tenda">Total Biaya</label>
+                                    <input type="number" id="total-biaya-tenda" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dp-tenda">DP (50%)</label>
+                                    <input type="number" id="dp-tenda" class="form-control" readonly>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary btn-block" onclick="simpanReservasi('tenda')">
+                                <i class="fas fa-save"></i> Simpan Reservasi
+                            </button>
+                        </form>
+                    </div>
+                    
+                    <!-- Glamping Tab -->
+                    <div id="glamping-tab" class="tab-content">
+                        <form id="reservasi-glamping-form">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nama-glamping">Nama Pemesan</label>
+                                    <input type="text" id="nama-glamping" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="telepon-glamping">Telepon/WA</label>
+                                    <input type="tel" id="telepon-glamping" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="checkin-glamping">Check-in</label>
+                                    <input type="date" id="checkin-glamping" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="checkout-glamping">Check-out</label>
+                                    <input type="date" id="checkout-glamping" class="form-control" required>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="jumlah-orang-glamping">Jumlah Orang</label>
+                                    <input type="number" id="jumlah-orang-glamping" class="form-control" min="1" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="glamping-unit">Pilih Glamping</label>
+                                    <select id="glamping-unit" class="form-control" required>
+                                        <option value="">Pilih Glamping</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="total-biaya-glamping">Total Biaya</label>
+                                    <input type="number" id="total-biaya-glamping" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="dp-glamping">DP (50%)</label>
+                                    <input type="number" id="dp-glamping" class="form-control" readonly>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary btn-block" onclick="simpanReservasi('glamping')">
+                                <i class="fas fa-save"></i> Simpan Reservasi
+                            </button>
+                        </form>
+                    </div>
+                </section>
 
-            <!-- Reservasi Section -->
-            <section id="reservasi-section" class="content-section hidden">
-                <h2 class="section-title"><i class="fas fa-calendar-plus"></i> Form Reservasi Baru</h2>
-                
-                <form id="reservasi-form">
-                    <h4 class="section-title"><i class="fas fa-user"></i> Data Pemesan</h4>
-                    <div class="form-row">
+                <!-- Invoice Section -->
+                <section id="invoice-section" class="content-section hidden">
+                    <h2 class="section-title"><i class="fas fa-file-invoice"></i> Daftar Invoice</h2>
+                    
+                    <div class="form-row mb-3">
                         <div class="form-group">
-                            <label for="nama">Nama Pemesan</label>
-                            <input type="text" id="nama" class="form-control" placeholder="Nama lengkap" required>
+                            <input type="text" id="cari-invoice" class="form-control" placeholder="Cari invoice/nama..." onkeyup="filterInvoice()">
                         </div>
                         <div class="form-group">
-                            <label for="telepon">Nomor Telepon/WA</label>
-                            <input type="tel" id="telepon" class="form-control" placeholder="+62 8xx xxxx xxxx" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="jumlah-orang">Jumlah Orang/Rombongan</label>
-                            <input type="number" id="jumlah-orang" class="form-control" value="1" min="1" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="email">Email (Opsional)</label>
-                            <input type="email" id="email" class="form-control" placeholder="alamat@email.com">
-                        </div>
-                    </div>
-
-                    <h4 class="section-title mt-3"><i class="fas fa-calendar-check"></i> Detail Reservasi</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="tanggal-checkin">Tanggal Check-in</label>
-                            <input type="date" id="tanggal-checkin" class="form-control" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tanggal-checkout">Tanggal Check-out</label>
-                            <input type="date" id="tanggal-checkout" class="form-control" required>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="jenis-reservasi">Jenis Reservasi</label>
-                            <select id="jenis-reservasi" class="form-control" required>
-                                <option value="tenda">Lapak Tenda</option>
-                                <option value="glamping">Glamping</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="kode-lokasi">Kode Lapak/Glamping</label>
-                            <input type="text" id="kode-lokasi" class="form-control" placeholder="D01, G01, etc" required>
-                        </div>
-                    </div>
-
-                    <h4 class="section-title mt-3"><i class="fas fa-money-check-alt"></i> Pembayaran</h4>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="total-biaya">Total Biaya (Rp)</label>
-                            <input type="number" id="total-biaya" class="form-control" placeholder="0" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="status-pembayaran">Status Pembayaran</label>
-                            <select id="status-pembayaran" class="form-control" required>
-                                <option value="pending">Pending (DP)</option>
-                                <option value="dibayar">Dibayar (DP/Lunas)</option>
+                            <select id="filter-status-invoice" class="form-control" onchange="filterInvoice()">
+                                <option value="">Semua Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="dibayar">Dibayar</option>
                                 <option value="lunas">Lunas</option>
                             </select>
                         </div>
                     </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Invoice</th>
+                                    <th>Nama Pemesan</th>
+                                    <th>Telepon</th>
+                                    <th>Jenis</th>
+                                    <th>Total Biaya</th>
+                                    <th>Status</th>
+                                    <th>Tgl Reservasi</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-list">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
 
-                    <div class="mt-3">
-                        <button type="button" class="btn btn-primary btn-block" onclick="submitReservasi()">
-                            <i class="fas fa-save"></i> Simpan Reservasi ke Firebase
+                <!-- Lapak Section -->
+                <section id="lapak-section" class="content-section hidden">
+                    <h2 class="section-title"><i class="fas fa-map-marked"></i> Status Lapak & Glamping</h2>
+                    
+                    <div class="form-row mb-3">
+                        <div class="form-group">
+                            <label for="filter-tanggal-lapak">Filter Tanggal</label>
+                            <input type="date" id="filter-tanggal-lapak" class="form-control" onchange="updateLapakStatus()">
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-campground"></i> Lapak Tenda</h3>
+                    <div class="table-responsive mb-3">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kode Lapak</th>
+                                    <th>Status</th>
+                                    <th>Harga/Malam</th>
+                                    <th>Kapasitas</th>
+                                    <th>Reservasi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lapak-status">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3 class="section-title"><i class="fas fa-home"></i> Glamping</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kode Glamping</th>
+                                    <th>Nama</th>
+                                    <th>Status</th>
+                                    <th>Harga/Malam</th>
+                                    <th>Kapasitas</th>
+                                    <th>Reservasi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="glamping-status">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- Laporan Section -->
+                <section id="laporan-section" class="content-section hidden">
+                    <h2 class="section-title"><i class="fas fa-chart-bar"></i> Laporan Keuangan</h2>
+                    
+                    <div class="form-row mb-3">
+                        <div class="form-group">
+                            <label for="periode-laporan">Periode Laporan</label>
+                            <select id="periode-laporan" class="form-control" onchange="generateLaporan()">
+                                <option value="hari-ini">Hari Ini</option>
+                                <option value="minggu-ini">Minggu Ini</option>
+                                <option value="bulan-ini" selected>Bulan Ini</option>
+                                <option value="tahun-ini">Tahun Ini</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-cards mb-3">
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </div>
+                            <div class="card-value" id="total-omzet">Rp 0</div>
+                            <div class="card-label">Total Omzet</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <div class="card-value" id="total-transaksi">0</div>
+                            <div class="card-label">Total Transaksi</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-campground"></i>
+                            </div>
+                            <div class="card-value" id="lapak-terjual">0</div>
+                            <div class="card-label">Lapak Terjual</div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <div class="card-value" id="glamping-terjual">0</div>
+                            <div class="card-label">Glamping Terjual</div>
+                        </div>
+                    </div>
+                    
+                    <h3 class="section-title">Detail Transaksi</h3>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Tanggal</th>
+                                    <th>Invoice</th>
+                                    <th>Jenis</th>
+                                    <th>Nama Pemesan</th>
+                                    <th>Total Biaya</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detail-laporan">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-right mt-3">
+                        <button class="btn btn-primary" onclick="exportLaporanPDF()">
+                            <i class="fas fa-file-pdf"></i> Export PDF
                         </button>
                     </div>
-                </form>
-            </section>
+                </section>
 
-            <!-- Data Reservasi Section -->
-            <section id="data-section" class="content-section hidden">
-                <h2 class="section-title"><i class="fas fa-list-alt"></i> Data Reservasi</h2>
-                
-                <div class="form-row mb-3">
-                    <div class="form-group">
-                        <label for="cari-data">Cari Nama/Telepon</label>
-                        <input type="text" id="cari-data" class="form-control" placeholder="Masukkan kata kunci..." onkeyup="filterData()">
+                <!-- Pengaturan Section -->
+                <section id="pengaturan-section" class="content-section hidden">
+                    <h2 class="section-title"><i class="fas fa-cog"></i> Pengaturan Sistem</h2>
+                    
+                    <div class="tabs mb-3">
+                        <div class="tab active" onclick="changePengaturanTab('umum')">
+                            <i class="fas fa-sliders-h"></i> Umum
+                        </div>
+                        <div class="tab" onclick="changePengaturanTab('database')">
+                            <i class="fas fa-database"></i> Database
+                        </div>
+                        <div class="tab" onclick="changePengaturanTab('backup')">
+                            <i class="fas fa-save"></i> Backup
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="filter-status-data">Filter Status</label>
-                        <select id="filter-status-data" class="form-control" onchange="filterData()">
-                            <option value="">Semua Status</option>
-                            <option value="pending">Pending</option>
-                            <option value="dibayar">Dibayar</option>
-                            <option value="lunas">Lunas</option>
-                        </select>
+                    
+                    <!-- Pengaturan Umum -->
+                    <div id="pengaturan-umum" class="tab-content active">
+                        <form id="form-pengaturan">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="nama-perusahaan">Nama Perusahaan</label>
+                                    <input type="text" id="nama-perusahaan" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="harga-tiket">Harga Tiket/Orang</label>
+                                    <input type="number" id="harga-tiket" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="jam-checkin">Jam Check-in</label>
+                                    <input type="time" id="jam-checkin" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="jam-checkout">Jam Check-out</label>
+                                    <input type="time" id="jam-checkout" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="dp-percentage">Persentase DP (%)</label>
+                                    <input type="number" id="dp-percentage" class="form-control" min="0" max="100">
+                                </div>
+                                <div class="form-group">
+                                    <label for="no-layanan">No. Layanan</label>
+                                    <input type="text" id="no-layanan" class="form-control">
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="btn btn-primary btn-block" onclick="simpanPengaturan()">
+                                <i class="fas fa-save"></i> Simpan Pengaturan
+                            </button>
+                        </form>
                     </div>
-                </div>
-                
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Nama Pemesan</th>
-                                <th>Telepon</th>
-                                <th>Check-in</th>
-                                <th>Check-out</th>
-                                <th>Jenis</th>
-                                <th>Total Biaya</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody id="data-list">
-                            <!-- Data akan diisi oleh JavaScript -->
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-
-            <!-- Pengaturan Section -->
-            <section id="pengaturan-section" class="content-section hidden">
-                <h2 class="section-title"><i class="fas fa-cog"></i> Pengaturan Sistem</h2>
-                
-                <div class="alert alert-info">
-                    <i class="fas fa-info-circle"></i> Pengaturan ini akan disimpan di Firebase Database
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="nama-perusahaan">Nama Perusahaan</label>
-                        <input type="text" id="nama-perusahaan" class="form-control" value="Bukit Sampalan Asri">
+                    
+                    <!-- Pengaturan Database -->
+                    <div id="pengaturan-database" class="tab-content">
+                        <div class="alert alert-info mb-3">
+                            <i class="fas fa-info-circle"></i> Pilih mode penyimpanan data
+                        </div>
+                        
+                        <div class="db-selector">
+                            <div class="db-option active" onclick="pilihDatabase('local')">
+                                <i class="fas fa-laptop"></i>
+                                <div>Local Storage</div>
+                                <small>Data disimpan di browser</small>
+                            </div>
+                            <div class="db-option" onclick="pilihDatabase('firebase')">
+                                <i class="fas fa-cloud"></i>
+                                <div>Firebase</div>
+                                <small>Data disimpan di cloud</small>
+                            </div>
+                        </div>
+                        
+                        <div id="firebase-config" class="mt-3 hidden">
+                            <h4>Konfigurasi Firebase</h4>
+                            <div class="form-group">
+                                <label>API Key</label>
+                                <input type="text" class="form-control" value="AIzaSyALzmkMAaJEwZO04OMAZaaWfcLBjYU2GCM" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label>Database URL</label>
+                                <input type="text" class="form-control" value="https://reservasi-kemah-bsa-default-rtdb.asia-southeast1.firebasedatabase.app" readonly>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-3">
+                            <button class="btn btn-secondary btn-block" onclick="syncData()">
+                                <i class="fas fa-sync"></i> Sinkronisasi Data
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="harga-tiket">Harga Tiket Masuk/Orang</label>
-                        <input type="number" id="harga-tiket" class="form-control" value="15000">
+                    
+                    <!-- Backup Section -->
+                    <div id="pengaturan-backup" class="tab-content">
+                        <div class="alert alert-warning mb-3">
+                            <i class="fas fa-exclamation-triangle"></i> Backup data secara berkala
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <button class="btn btn-primary btn-block" onclick="backupData()">
+                                    <i class="fas fa-download"></i> Download Backup
+                                </button>
+                            </div>
+                            <div class="form-group">
+                                <button class="btn btn-secondary btn-block" onclick="restoreData()">
+                                    <i class="fas fa-upload"></i> Restore Backup
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row mt-3">
+                            <div class="form-group">
+                                <button class="btn btn-danger btn-block" onclick="resetData()">
+                                    <i class="fas fa-trash"></i> Reset Data
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="jam-checkin">Jam Check-in</label>
-                        <input type="time" id="jam-checkin" class="form-control" value="14:00">
-                    </div>
-                    <div class="form-group">
-                        <label for="jam-checkout">Jam Check-out</label>
-                        <input type="time" id="jam-checkout" class="form-control" value="12:00">
-                    </div>
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="no-layanan">Nomor Layanan</label>
-                        <input type="text" id="no-layanan" class="form-control" value="+62812-9639-2270">
-                    </div>
-                    <div class="form-group">
-                        <label for="dp-percentage">Persentase DP (%)</label>
-                        <input type="number" id="dp-percentage" class="form-control" value="50" min="0" max="100">
-                    </div>
-                </div>
-                
-                <button class="btn btn-primary btn-block mt-3" onclick="simpanPengaturan()">
-                    <i class="fas fa-save"></i> Simpan Pengaturan ke Firebase
-                </button>
-                
-                <div class="alert alert-success mt-3 hidden" id="save-success">
-                    <i class="fas fa-check-circle"></i> Pengaturan berhasil disimpan!
-                </div>
-            </section>
-
-            <!-- Backup Section -->
-            <section id="backup-section" class="content-section hidden">
-                <h2 class="section-title"><i class="fas fa-database"></i> Backup & Restore</h2>
-                
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i> Hati-hati dalam menggunakan fitur ini
-                </div>
-                
-                <div class="form-row">
-                    <div class="form-group">
-                        <button class="btn btn-primary btn-block" onclick="backupToLocal()">
-                            <i class="fas fa-download"></i> Download Backup ke Local
-                        </button>
-                    </div>
-                    <div class="form-group">
-                        <button class="btn btn-secondary btn-block" onclick="restoreFromLocal()">
-                            <i class="fas fa-upload"></i> Upload Backup dari Local
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="form-row mt-3">
-                    <div class="form-group">
-                        <button class="btn btn-danger btn-block" onclick="resetLocalData()">
-                            <i class="fas fa-trash"></i> Reset Data Local
-                        </button>
-                    </div>
-                </div>
-            </section>
+                </section>
+            </div>
         </div>
 
-        <!-- Modal Detail -->
-        <div id="detail-modal" class="modal">
+        <!-- Invoice Detail Modal -->
+        <div id="invoice-modal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title"><i class="fas fa-receipt"></i> Detail Reservasi</h5>
-                    <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+                    <h5 class="modal-title"><i class="fas fa-file-invoice"></i> Detail Invoice</h5>
+                    <button class="modal-close" onclick="closeInvoiceModal()">&times;</button>
                 </div>
-                <div id="detail-content">
-                    <!-- Konten detail akan diisi oleh JavaScript -->
+                <div id="invoice-detail">
+                    <!-- Detail akan diisi oleh JavaScript -->
                 </div>
                 <div class="modal-footer mt-3">
-                    <button class="btn btn-secondary" onclick="closeDetailModal()">
-                        <i class="fas fa-times"></i> Tutup
-                    </button>
-                    <button class="btn btn-danger" onclick="hapusReservasi()">
-                        <i class="fas fa-trash"></i> Hapus
-                    </button>
+                    <button class="btn btn-secondary" onclick="closeInvoiceModal()">Tutup</button>
+                    <button class="btn btn-primary" onclick="cetakInvoice()">Cetak</button>
                 </div>
             </div>
         </div>
 
+        <!-- Loading Modal -->
         <div id="loading-modal" class="modal">
-            <div class="modal-content" style="max-width: 280px; text-align: center;">
+            <div class="modal-content" style="max-width: 300px; text-align: center;">
                 <div class="spinner"></div>
                 <p id="loading-message">Memproses...</p>
             </div>
         </div>
-        
+
         <footer>
             <div class="container">
-                <div class="text-center">
-                    <h3>Bukit Sampalan Asri</h3>
-                    <p>Sistem Reservasi Kemah Keluarga - Firebase Version</p>
-                    <p class="copyright">&copy; 2025 Bukit Sampalan Asri. All rights reserved.</p>
+                <div class="text-center py-3">
+                    <p>&copy; 2025 Bukit Sampalan Asri - Sistem Reservasi Kemah Keluarga</p>
+                    <p id="version-info">Version 2.0 | Local Storage Mode</p>
                 </div>
             </div>
         </footer>
     </div>
-    
+
     <script>
-        // Global variables
+        // ============================
+        // GLOBAL VARIABLES
+        // ============================
         let currentUser = null;
-        let currentReservasiId = null;
+        let currentDatabase = 'local'; // 'local' or 'firebase'
+        let firebaseApp = null;
+        let firebaseDatabase = null;
+        
+        // Default Data Structure
         let dataApp = {
-            reservasi: {},
-            pengaturan: {},
-            users: {}
+            reservasi: [],
+            lapakTenda: [],
+            glamping: [],
+            pengaturan: {
+                perusahaan: {
+                    nama: "Bukit Sampalan Asri",
+                    hargaTiket: 15000,
+                    jamCheckin: "14:00",
+                    jamCheckout: "12:00",
+                    noLayanan: "+62812-9639-2270"
+                },
+                dpPercentage: 50
+            },
+            users: [
+                { id: 1, username: 'admin', password: 'admin123', nama: 'Administrator', role: 'admin' },
+                { id: 2, username: 'staff', password: 'staff123', nama: 'Staff Reservasi', role: 'staff' }
+            ]
         };
 
-        // Utility Functions
+        // ============================
+        // UTILITY FUNCTIONS
+        // ============================
         function formatRupiah(number) {
-            if (isNaN(number)) number = 0;
             return new Intl.NumberFormat('id-ID', {
                 style: 'currency',
                 currency: 'IDR',
@@ -831,44 +1257,215 @@
         }
 
         function formatDate(date) {
-            if (!date) return '';
             const d = new Date(date);
-            if (isNaN(d.getTime())) return '';
-            
-            let month = '' + (d.getMonth() + 1);
-            let day = '' + d.getDate();
-            const year = d.getFullYear();
-
-            if (month.length < 2) month = '0' + month;
-            if (day.length < 2) day = '0' + day;
-
-            return [year, month, day].join('-');
+            return d.toISOString().split('T')[0];
         }
-        
+
         function formatDateID(dateString) {
-            if (!dateString) return '';
-            const options = { year: 'numeric', month: 'long', day: 'numeric' };
-            const date = new Date(dateString + 'T00:00:00');
-            if (isNaN(date.getTime())) return dateString;
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const date = new Date(dateString);
             return date.toLocaleDateString('id-ID', options);
         }
 
-        function generateId() {
-            return 'RES_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        function generateInvoiceNumber() {
+            const now = new Date();
+            const datePart = now.getFullYear().toString().substr(-2) + 
+                           (now.getMonth() + 1).toString().padStart(2, '0') + 
+                           now.getDate().toString().padStart(2, '0');
+            const randomPart = Math.random().toString(36).substr(2, 5).toUpperCase();
+            return `INV-${datePart}-${randomPart}`;
         }
 
-        function showLoadingModal(message = 'Memproses...') {
+        function showLoading(message = 'Memproses...') {
             document.getElementById('loading-message').textContent = message;
             document.getElementById('loading-modal').style.display = 'flex';
         }
 
-        function hideLoadingModal() {
+        function hideLoading() {
             document.getElementById('loading-modal').style.display = 'none';
         }
 
-        // Authentication Functions
+        function showAlert(type, message) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+            
+            document.querySelector('.container').insertBefore(alertDiv, document.querySelector('.main-content'));
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+
+        // ============================
+        // DATABASE FUNCTIONS
+        // ============================
+        function selectDatabase(db) {
+            document.querySelectorAll('.db-option').forEach(opt => opt.classList.remove('active'));
+            event.target.closest('.db-option').classList.add('active');
+            currentDatabase = db;
+        }
+
+        function pilihDatabase(db) {
+            selectDatabase(db);
+            if (db === 'firebase') {
+                document.getElementById('firebase-config').classList.remove('hidden');
+                initFirebase();
+            } else {
+                document.getElementById('firebase-config').classList.add('hidden');
+            }
+            updateDBStatus();
+        }
+
+        function initFirebase() {
+            try {
+                if (!firebase.apps.length) {
+                    firebaseApp = firebase.initializeApp(firebaseConfig);
+                    firebaseDatabase = firebase.database();
+                    console.log('Firebase initialized successfully');
+                }
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                showAlert('danger', 'Gagal menginisialisasi Firebase');
+            }
+        }
+
+        async function loadData() {
+            showLoading('Memuat data...');
+            
+            try {
+                if (currentDatabase === 'firebase') {
+                    await loadFromFirebase();
+                } else {
+                    loadFromLocalStorage();
+                }
+                
+                // Initialize default data if empty
+                if (dataApp.lapakTenda.length === 0) {
+                    initializeDefaultData();
+                }
+                
+                updateDashboard();
+                loadPengaturanForm();
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showAlert('danger', 'Gagal memuat data');
+                hideLoading();
+            }
+        }
+
+        async function saveData() {
+            showLoading('Menyimpan data...');
+            
+            try {
+                if (currentDatabase === 'firebase') {
+                    await saveToFirebase();
+                } else {
+                    saveToLocalStorage();
+                }
+                
+                hideLoading();
+                showAlert('success', 'Data berhasil disimpan');
+                
+            } catch (error) {
+                console.error('Error saving data:', error);
+                showAlert('danger', 'Gagal menyimpan data');
+                hideLoading();
+            }
+        }
+
+        // Local Storage Functions
+        function loadFromLocalStorage() {
+            const savedData = localStorage.getItem('reservasiBSA');
+            if (savedData) {
+                dataApp = JSON.parse(savedData);
+            }
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('reservasiBSA', JSON.stringify(dataApp));
+        }
+
+        // Firebase Functions
+        async function loadFromFirebase() {
+            if (!firebaseDatabase) {
+                initFirebase();
+                if (!firebaseDatabase) {
+                    throw new Error('Firebase not initialized');
+                }
+            }
+            
+            const snapshot = await firebaseDatabase.ref('/').once('value');
+            const firebaseData = snapshot.val();
+            
+            if (firebaseData) {
+                dataApp = firebaseData;
+            }
+        }
+
+        async function saveToFirebase() {
+            if (!firebaseDatabase) {
+                initFirebase();
+                if (!firebaseDatabase) {
+                    throw new Error('Firebase not initialized');
+                }
+            }
+            
+            await firebaseDatabase.ref('/').set(dataApp);
+        }
+
+        function syncData() {
+            if (currentDatabase === 'firebase') {
+                loadFromFirebase().then(() => {
+                    saveToLocalStorage();
+                    showAlert('success', 'Data berhasil disinkronisasi dari Firebase');
+                    loadData();
+                }).catch(error => {
+                    showAlert('danger', 'Gagal sinkronisasi: ' + error.message);
+                });
+            } else {
+                loadFromLocalStorage();
+                showAlert('success', 'Data berhasil dimuat dari Local Storage');
+                loadData();
+            }
+        }
+
+        // ============================
+        // INITIALIZATION
+        // ============================
+        function initializeDefaultData() {
+            // Default lapak tenda
+            dataApp.lapakTenda = [
+                { kode: 'D01', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D02', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D03', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D04', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D05', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D06', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D07', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D08', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D09', harga: 50000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D10', harga: 50000, kapasitas: 4, status: 'tersedia' }
+            ];
+
+            // Default glamping
+            dataApp.glamping = [
+                { kode: 'G01', nama: 'Glamping Family', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G02', nama: 'Glamping Family', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G03', nama: 'Glamping Family', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G04', nama: 'Glamping Family', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G05', nama: 'Glamping Couple', harga: 100000, kapasitas: 2, status: 'tersedia' },
+                { kode: 'G06', nama: 'Glamping Couple', harga: 100000, kapasitas: 2, status: 'tersedia' }
+            ];
+        }
+
+        // ============================
+        // AUTHENTICATION
+        // ============================
         function login() {
-            const username = document.getElementById('username').value.trim();
+            const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const errorElement = document.getElementById('login-error');
 
@@ -878,28 +1475,25 @@
                 return;
             }
 
-            showLoadingModal('Memeriksa login...');
-            
-            // In a real app, you would use Firebase Authentication
-            // For simplicity, we're using a simple check
-            setTimeout(() => {
-                if (username === 'admin' && password === 'admin123') {
-                    currentUser = {
-                        id: 'admin',
-                        nama: 'Administrator',
-                        role: 'admin'
-                    };
-                    
-                    errorElement.classList.add('hidden');
+            const user = dataApp.users.find(u => 
+                u.username === username && u.password === password
+            );
+
+            if (user) {
+                currentUser = user;
+                errorElement.classList.add('hidden');
+                
+                // Load data based on selected database
+                loadData().then(() => {
                     document.getElementById('login-screen').style.display = 'none';
                     document.getElementById('main-app').style.display = 'block';
-                    initializeApp();
-                } else {
-                    errorElement.textContent = 'Username atau password salah!';
-                    errorElement.classList.remove('hidden');
-                }
-                hideLoadingModal();
-            }, 1000);
+                    updateDBStatus();
+                    updateUI();
+                });
+            } else {
+                errorElement.textContent = 'Username atau password salah!';
+                errorElement.classList.remove('hidden');
+            }
         }
 
         function logout() {
@@ -908,264 +1502,263 @@
                 document.getElementById('main-app').style.display = 'none';
                 document.getElementById('login-screen').style.display = 'block';
                 document.getElementById('login-form').reset();
-                document.getElementById('login-error').classList.add('hidden');
             }
         }
 
-        // Firebase Database Functions
-        function saveToFirebase(path, data) {
-            return database.ref(path).set(data)
-                .then(() => {
-                    console.log('Data saved to Firebase:', path);
-                    return true;
-                })
-                .catch((error) => {
-                    console.error('Error saving to Firebase:', error);
-                    alert('Gagal menyimpan data ke Firebase: ' + error.message);
-                    return false;
-                });
-        }
-
-        function loadFromFirebase(path) {
-            return database.ref(path).once('value')
-                .then((snapshot) => {
-                    return snapshot.val();
-                })
-                .catch((error) => {
-                    console.error('Error loading from Firebase:', error);
-                    return null;
-                });
-        }
-
-        function deleteFromFirebase(path) {
-            return database.ref(path).remove()
-                .then(() => {
-                    console.log('Data deleted from Firebase:', path);
-                    return true;
-                })
-                .catch((error) => {
-                    console.error('Error deleting from Firebase:', error);
-                    alert('Gagal menghapus data dari Firebase: ' + error.message);
-                    return false;
-                });
-        }
-
-        // Initialize Application
-        async function initializeApp() {
+        // ============================
+        // UI FUNCTIONS
+        // ============================
+        function updateUI() {
             if (!currentUser) return;
 
             document.getElementById('current-user').textContent = currentUser.nama;
-            document.getElementById('user-role').textContent = currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1);
+            document.getElementById('user-role').textContent = currentUser.role;
             document.getElementById('user-avatar').textContent = currentUser.nama.charAt(0).toUpperCase();
-
-            showLoadingModal('Memuat data dari Firebase...');
-
-            try {
-                // Load all data from Firebase
-                const [reservasiData, pengaturanData, usersData] = await Promise.all([
-                    loadFromFirebase('reservasi'),
-                    loadFromFirebase('pengaturan'),
-                    loadFromFirebase('users')
-                ]);
-
-                dataApp.reservasi = reservasiData || {};
-                dataApp.pengaturan = pengaturanData || {};
-                dataApp.users = usersData || {};
-
-                // Set default settings if none exist
-                if (Object.keys(dataApp.pengaturan).length === 0) {
-                    dataApp.pengaturan = {
-                        perusahaan: {
-                            nama: "Bukit Sampalan Asri",
-                            hargaTiket: 15000,
-                            jamCheckin: "14:00",
-                            jamCheckout: "12:00",
-                            noLayanan: "+62812-9639-2270"
-                        },
-                        dpPercentage: 50
-                    };
-                    await saveToFirebase('pengaturan', dataApp.pengaturan);
-                }
-
-                // Set default user if none exist
-                if (Object.keys(dataApp.users).length === 0) {
-                    dataApp.users = {
-                        admin: {
-                            id: 'admin',
-                            nama: 'Administrator',
-                            username: 'admin',
-                            password: 'admin123',
-                            role: 'admin'
-                        }
-                    };
-                    await saveToFirebase('users', dataApp.users);
-                }
-
-                // Update UI
-                updateDashboard();
-                loadPengaturanData();
-                showSection('dashboard');
-                
-                // Set up realtime listeners
-                setupRealtimeListeners();
-
-                // Update connection status
-                document.getElementById('connection-status').textContent = 'Terhubung';
-                document.getElementById('connection-status').style.color = 'var(--success-color)';
-
-            } catch (error) {
-                console.error('Error initializing app:', error);
-                alert('Gagal memuat data dari Firebase: ' + error.message);
-            } finally {
-                hideLoadingModal();
-            }
+            
+            // Set today's date for forms
+            const today = formatDate(new Date());
+            document.getElementById('checkin-tenda').value = today;
+            document.getElementById('checkout-tenda').value = today;
+            document.getElementById('checkin-glamping').value = today;
+            document.getElementById('checkout-glamping').value = today;
+            document.getElementById('filter-tanggal-lapak').value = today;
+            
+            // Update lapak options
+            updateLapakOptions();
+            
+            // Update DP calculation
+            document.getElementById('total-biaya-tenda').addEventListener('input', updateDPTenda);
+            document.getElementById('total-biaya-glamping').addEventListener('input', updateDPGlamping);
         }
 
-        function setupRealtimeListeners() {
-            // Listen for reservasi changes
-            database.ref('reservasi').on('value', (snapshot) => {
-                dataApp.reservasi = snapshot.val() || {};
-                updateDashboard();
-                if (document.getElementById('data-section').classList.contains('hidden') === false) {
-                    loadDataList();
-                }
-            });
-
-            // Listen for pengaturan changes
-            database.ref('pengaturan').on('value', (snapshot) => {
-                dataApp.pengaturan = snapshot.val() || {};
-                loadPengaturanData();
-            });
-
-            // Monitor connection status
-            database.ref('.info/connected').on('value', (snapshot) => {
-                const statusElement = document.getElementById('connection-status');
-                if (snapshot.val() === true) {
-                    statusElement.textContent = 'Terhubung';
-                    statusElement.style.color = 'var(--success-color)';
-                } else {
-                    statusElement.textContent = 'Terputus';
-                    statusElement.style.color = 'var(--danger-color)';
-                }
-            });
+        function updateDBStatus() {
+            const statusText = currentDatabase === 'firebase' ? 'Firebase Online' : 'Local Storage';
+            document.getElementById('db-status').textContent = `Sistem Reservasi Kemah Keluarga - ${statusText}`;
+            document.getElementById('version-info').textContent = `Version 2.0 | ${statusText} Mode`;
+            
+            const alertElement = document.getElementById('db-info-alert');
+            if (currentDatabase === 'firebase') {
+                alertElement.innerHTML = '<i class="fas fa-cloud"></i> Menggunakan Firebase Realtime Database';
+                alertElement.className = 'alert alert-info mb-3';
+            } else {
+                alertElement.innerHTML = '<i class="fas fa-laptop"></i> Menggunakan Local Storage (Offline Mode)';
+                alertElement.className = 'alert alert-warning mb-3';
+            }
         }
 
         function showSection(sectionId) {
+            // Update tabs
+            document.querySelectorAll('.tabs .tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show section
             document.querySelectorAll('.content-section').forEach(section => {
                 section.classList.add('hidden');
             });
-
             document.getElementById(sectionId + '-section').classList.remove('hidden');
-
-            if (sectionId === 'data-section') {
-                loadDataList();
-            } else if (sectionId === 'reservasi') {
-                // Set default dates
-                const today = formatDate(new Date());
-                const nextDay = formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
-                
-                document.getElementById('tanggal-checkin').value = today;
-                document.getElementById('tanggal-checkout').value = nextDay;
+            
+            // Load section data
+            switch(sectionId) {
+                case 'dashboard':
+                    updateDashboard();
+                    break;
+                case 'invoice':
+                    loadInvoiceList();
+                    break;
+                case 'lapak':
+                    updateLapakStatus();
+                    break;
+                case 'laporan':
+                    generateLaporan();
+                    break;
+                case 'pengaturan':
+                    loadPengaturanForm();
+                    break;
             }
         }
 
-        // Dashboard Functions
-        function updateDashboard() {
-            const totalReservasi = Object.keys(dataApp.reservasi).length;
-            const totalInvoice = Object.keys(dataApp.reservasi).length; // Same as reservasi for now
-            const totalUsers = Object.keys(dataApp.users).length;
-
-            document.getElementById('total-reservasi').textContent = totalReservasi;
-            document.getElementById('total-invoice').textContent = totalInvoice;
-            document.getElementById('total-users').textContent = totalUsers;
+        function changeReservasiTab(tab) {
+            document.querySelectorAll('#reservasi-section .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#reservasi-section .tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tab + '-tab').classList.add('active');
         }
 
-        // Reservasi Functions
-        function submitReservasi() {
-            const form = document.getElementById('reservasi-form');
+        function changePengaturanTab(tab) {
+            document.querySelectorAll('#pengaturan-section .tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('#pengaturan-section .tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById('pengaturan-' + tab).classList.add('active');
+        }
+
+        // ============================
+        // DASHBOARD FUNCTIONS
+        // ============================
+        function updateDashboard() {
+            // Update statistics
+            const lapakTersedia = dataApp.lapakTenda.filter(l => l.status === 'tersedia').length;
+            const glampingTersedia = dataApp.glamping.filter(g => g.status === 'tersedia').length;
+            
+            const today = formatDate(new Date());
+            const reservasiHariIni = dataApp.reservasi.filter(r => 
+                r.tanggalReservasi === today
+            );
+            
+            const pengunjungHariIni = reservasiHariIni.reduce((sum, r) => sum + (r.jumlahOrang || 0), 0);
+            const omzetHarian = reservasiHariIni.reduce((sum, r) => sum + (r.totalBiaya || 0), 0);
+            
+            // Update cards
+            document.getElementById('lapak-tersedia').textContent = lapakTersedia;
+            document.getElementById('glamping-tersedia').textContent = glampingTersedia;
+            document.getElementById('pengunjung-hari-ini').textContent = pengunjungHariIni;
+            document.getElementById('omzet-harian').textContent = formatRupiah(omzetHarian);
+            
+            // Update reservasi hari ini table
+            const tbody = document.getElementById('reservasi-hari-ini');
+            tbody.innerHTML = '';
+            
+            reservasiHariIni.slice(0, 5).forEach(reservasi => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${reservasi.invoice}</td>
+                    <td>${reservasi.nama}</td>
+                    <td>${reservasi.jenis}</td>
+                    <td>${formatDateID(reservasi.tanggalCheckin)}</td>
+                    <td>${formatDateID(reservasi.tanggalCheckout)}</td>
+                    <td><span class="badge badge-${reservasi.status === 'lunas' ? 'success' : 'warning'}">${reservasi.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // ============================
+        // RESERVASI FUNCTIONS
+        // ============================
+        function updateLapakOptions() {
+            const lapakSelect = document.getElementById('lapak-tenda');
+            const glampingSelect = document.getElementById('glamping-unit');
+            
+            lapakSelect.innerHTML = '<option value="">Pilih Lapak</option>';
+            glampingSelect.innerHTML = '<option value="">Pilih Glamping</option>';
+            
+            // Add available lapak
+            dataApp.lapakTenda.filter(l => l.status === 'tersedia').forEach(lapak => {
+                const option = document.createElement('option');
+                option.value = lapak.kode;
+                option.textContent = `${lapak.kode} - ${formatRupiah(lapak.harga)}/malam (${lapak.kapasitas} orang)`;
+                lapakSelect.appendChild(option);
+            });
+            
+            // Add available glamping
+            dataApp.glamping.filter(g => g.status === 'tersedia').forEach(glamping => {
+                const option = document.createElement('option');
+                option.value = glamping.kode;
+                option.textContent = `${glamping.kode} - ${glamping.nama} - ${formatRupiah(glamping.harga)}/malam`;
+                glampingSelect.appendChild(option);
+            });
+        }
+
+        function updateDPTenda() {
+            const totalBiaya = parseInt(document.getElementById('total-biaya-tenda').value) || 0;
+            const dpPercentage = dataApp.pengaturan.dpPercentage || 50;
+            const dp = Math.floor(totalBiaya * (dpPercentage / 100));
+            document.getElementById('dp-tenda').value = dp;
+        }
+
+        function updateDPGlamping() {
+            const totalBiaya = parseInt(document.getElementById('total-biaya-glamping').value) || 0;
+            const dpPercentage = dataApp.pengaturan.dpPercentage || 50;
+            const dp = Math.floor(totalBiaya * (dpPercentage / 100));
+            document.getElementById('dp-glamping').value = dp;
+        }
+
+        async function simpanReservasi(jenis) {
+            const formId = `reservasi-${jenis}-form`;
+            const form = document.getElementById(formId);
+            
             if (!form.checkValidity()) {
-                alert('Harap lengkapi semua field yang wajib diisi.');
                 form.reportValidity();
                 return;
             }
-
-            const reservasiId = generateId();
-            const reservasiData = {
-                id: reservasiId,
-                nama: document.getElementById('nama').value.trim(),
-                telepon: document.getElementById('telepon').value.trim(),
-                email: document.getElementById('email').value.trim() || '',
-                jumlahOrang: parseInt(document.getElementById('jumlah-orang').value) || 1,
-                tanggalCheckin: document.getElementById('tanggal-checkin').value,
-                tanggalCheckout: document.getElementById('tanggal-checkout').value,
-                jenis: document.getElementById('jenis-reservasi').value,
-                kodeLokasi: document.getElementById('kode-lokasi').value.toUpperCase(),
-                totalBiaya: parseInt(document.getElementById('total-biaya').value) || 0,
-                status: document.getElementById('status-pembayaran').value,
+            
+            // Get form data
+            const invoice = generateInvoiceNumber();
+            const nama = document.getElementById(`nama-${jenis}`).value;
+            const telepon = document.getElementById(`telepon-${jenis}`).value;
+            const tanggalCheckin = document.getElementById(`checkin-${jenis}`).value;
+            const tanggalCheckout = document.getElementById(`checkout-${jenis}`).value;
+            const jumlahOrang = parseInt(document.getElementById(`jumlah-orang-${jenis}`).value);
+            const kodeLokasi = jenis === 'tenda' ? 
+                document.getElementById('lapak-tenda').value : 
+                document.getElementById('glamping-unit').value;
+            const totalBiaya = parseInt(document.getElementById(`total-biaya-${jenis}`).value);
+            const dp = parseInt(document.getElementById(`dp-${jenis}`).value);
+            
+            // Create reservasi object
+            const reservasi = {
+                id: Date.now(),
+                invoice: invoice,
+                nama: nama,
+                telepon: telepon,
+                jenis: jenis,
                 tanggalReservasi: formatDate(new Date()),
-                createdBy: currentUser.id,
+                tanggalCheckin: tanggalCheckin,
+                tanggalCheckout: tanggalCheckout,
+                jumlahOrang: jumlahOrang,
+                kodeLokasi: kodeLokasi,
+                totalBiaya: totalBiaya,
+                dp: dp,
+                sisaPembayaran: totalBiaya - dp,
+                status: dp > 0 ? 'dibayar' : 'pending',
                 createdAt: new Date().toISOString()
             };
-
-            showLoadingModal('Menyimpan ke Firebase...');
-
-            // Save to Firebase
-            database.ref('reservasi/' + reservasiId).set(reservasiData)
-                .then(() => {
-                    alert('Reservasi berhasil disimpan ke Firebase! ID: ' + reservasiId);
-                    form.reset();
-                    
-                    // Set default dates
-                    const today = formatDate(new Date());
-                    const nextDay = formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
-                    
-                    document.getElementById('tanggal-checkin').value = today;
-                    document.getElementById('tanggal-checkout').value = nextDay;
-                    
-                    // Update dashboard
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    alert('Gagal menyimpan reservasi: ' + error.message);
-                })
-                .finally(() => {
-                    hideLoadingModal();
-                });
+            
+            // Update lapak/glamping status
+            if (jenis === 'tenda') {
+                const lapak = dataApp.lapakTenda.find(l => l.kode === kodeLokasi);
+                if (lapak) lapak.status = 'terpakai';
+            } else {
+                const glamping = dataApp.glamping.find(g => g.kode === kodeLokasi);
+                if (glamping) glamping.status = 'terpakai';
+            }
+            
+            // Add to data
+            dataApp.reservasi.push(reservasi);
+            
+            // Save data
+            await saveData();
+            
+            // Reset form
+            form.reset();
+            updateLapakOptions();
+            updateDashboard();
+            
+            // Show success message
+            showAlert('success', `Reservasi berhasil disimpan! Invoice: ${invoice}`);
         }
 
-        // Data List Functions
-        function loadDataList() {
-            const tbody = document.getElementById('data-list');
+        // ============================
+        // INVOICE FUNCTIONS
+        // ============================
+        function loadInvoiceList() {
+            const tbody = document.getElementById('invoice-list');
             tbody.innerHTML = '';
-
-            const reservasiArray = Object.values(dataApp.reservasi);
             
-            // Sort by date (newest first)
-            reservasiArray.sort((a, b) => new Date(b.tanggalReservasi) - new Date(a.tanggalReservasi));
-
-            reservasiArray.forEach(reservasi => {
-                let statusBadge;
-                if (reservasi.status === 'pending') {
-                    statusBadge = '<span class="badge badge-warning">Pending</span>';
-                } else if (reservasi.status === 'dibayar') {
-                    statusBadge = '<span class="badge badge-primary">Dibayar</span>';
-                } else {
-                    statusBadge = '<span class="badge badge-success">Lunas</span>';
-                }
-
+            dataApp.reservasi.forEach(reservasi => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td>${reservasi.id.substring(0, 8)}...</td>
-                    <td>${reservasi.nama || ''}</td>
-                    <td>${reservasi.telepon || ''}</td>
-                    <td>${formatDateID(reservasi.tanggalCheckin)}</td>
-                    <td>${formatDateID(reservasi.tanggalCheckout)}</td>
-                    <td>${reservasi.jenis ? reservasi.jenis.charAt(0).toUpperCase() + reservasi.jenis.slice(1) : ''}</td>
-                    <td>${formatRupiah(reservasi.totalBiaya || 0)}</td>
-                    <td>${statusBadge}</td>
+                    <td>${reservasi.invoice}</td>
+                    <td>${reservasi.nama}</td>
+                    <td>${reservasi.telepon}</td>
+                    <td>${reservasi.jenis}</td>
+                    <td>${formatRupiah(reservasi.totalBiaya)}</td>
+                    <td><span class="badge badge-${reservasi.status === 'lunas' ? 'success' : reservasi.status === 'dibayar' ? 'warning' : 'danger'}">${reservasi.status}</span></td>
+                    <td>${formatDateID(reservasi.tanggalReservasi)}</td>
                     <td>
-                        <button class="btn btn-primary btn-sm" onclick="showDetail('${reservasi.id}')">
-                            <i class="fas fa-eye"></i> Detail
+                        <button class="btn btn-sm btn-primary" onclick="viewInvoice('${reservasi.invoice}')">
+                            <i class="fas fa-eye"></i>
                         </button>
                     </td>
                 `;
@@ -1173,115 +1766,224 @@
             });
         }
 
-        function filterData() {
-            const keyword = document.getElementById('cari-data').value.toLowerCase();
-            const statusFilter = document.getElementById('filter-status-data').value;
+        function filterInvoice() {
+            const keyword = document.getElementById('cari-invoice').value.toLowerCase();
+            const statusFilter = document.getElementById('filter-status-invoice').value;
             
-            const rows = document.querySelectorAll('#data-list tr');
-            
+            const rows = document.querySelectorAll('#invoice-list tr');
             rows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                if (cells.length < 8) return;
-                
+                const cells = row.cells;
+                const invoice = cells[0].textContent.toLowerCase();
                 const nama = cells[1].textContent.toLowerCase();
                 const telepon = cells[2].textContent;
-                const statusBadge = cells[7].querySelector('.badge');
-                const status = statusBadge ? 
-                    (statusBadge.classList.contains('badge-warning') ? 'pending' :
-                     statusBadge.classList.contains('badge-primary') ? 'dibayar' : 'lunas') : '';
+                const status = cells[5].querySelector('.badge').textContent.toLowerCase();
                 
-                const keywordMatch = nama.includes(keyword) || telepon.includes(keyword);
+                const keywordMatch = invoice.includes(keyword) || nama.includes(keyword) || telepon.includes(keyword);
                 const statusMatch = !statusFilter || status === statusFilter;
                 
-                if (keywordMatch && statusMatch) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
+                row.style.display = keywordMatch && statusMatch ? '' : 'none';
             });
         }
 
-        // Detail Modal Functions
-        function showDetail(reservasiId) {
-            const reservasi = dataApp.reservasi[reservasiId];
+        function viewInvoice(invoiceNumber) {
+            const reservasi = dataApp.reservasi.find(r => r.invoice === invoiceNumber);
             if (!reservasi) return;
-
-            currentReservasiId = reservasiId;
             
-            const content = document.getElementById('detail-content');
-            content.innerHTML = `
+            const detailDiv = document.getElementById('invoice-detail');
+            detailDiv.innerHTML = `
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <p><strong>ID Reservasi:</strong> ${reservasi.id}</p>
-                        <p><strong>Nama Pemesan:</strong> ${reservasi.nama || ''}</p>
-                        <p><strong>Telepon:</strong> ${reservasi.telepon || ''}</p>
-                        <p><strong>Email:</strong> ${reservasi.email || '-'}</p>
+                        <p><strong>Invoice:</strong> ${reservasi.invoice}</p>
+                        <p><strong>Nama:</strong> ${reservasi.nama}</p>
+                        <p><strong>Telepon:</strong> ${reservasi.telepon}</p>
+                        <p><strong>Jenis:</strong> ${reservasi.jenis}</p>
                     </div>
                     <div class="form-group" style="flex: 1;">
                         <p><strong>Tgl. Reservasi:</strong> ${formatDateID(reservasi.tanggalReservasi)}</p>
                         <p><strong>Check-in:</strong> ${formatDateID(reservasi.tanggalCheckin)}</p>
                         <p><strong>Check-out:</strong> ${formatDateID(reservasi.tanggalCheckout)}</p>
-                        <p><strong>Jumlah Orang:</strong> ${reservasi.jumlahOrang || 0}</p>
+                        <p><strong>Status:</strong> <span class="badge badge-${reservasi.status === 'lunas' ? 'success' : 'warning'}">${reservasi.status}</span></p>
                     </div>
                 </div>
+                
                 <div class="form-row">
                     <div class="form-group" style="flex: 1;">
-                        <p><strong>Jenis:</strong> ${reservasi.jenis ? reservasi.jenis.charAt(0).toUpperCase() + reservasi.jenis.slice(1) : ''}</p>
-                        <p><strong>Kode Lokasi:</strong> ${reservasi.kodeLokasi || ''}</p>
-                        <p><strong>Total Biaya:</strong> ${formatRupiah(reservasi.totalBiaya || 0)}</p>
-                        <p><strong>Status:</strong> ${reservasi.status ? reservasi.status.toUpperCase() : ''}</p>
+                        <p><strong>Kode Lokasi:</strong> ${reservasi.kodeLokasi}</p>
+                        <p><strong>Jumlah Orang:</strong> ${reservasi.jumlahOrang}</p>
+                        <p><strong>Total Biaya:</strong> ${formatRupiah(reservasi.totalBiaya)}</p>
+                        <p><strong>DP:</strong> ${formatRupiah(reservasi.dp)}</p>
+                        <p><strong>Sisa Pembayaran:</strong> ${formatRupiah(reservasi.sisaPembayaran)}</p>
                     </div>
                 </div>
-                <div class="alert alert-info mt-3">
-                    <i class="fas fa-info-circle"></i> Data ini disimpan di Firebase Realtime Database
-                </div>
             `;
-
-            document.getElementById('detail-modal').style.display = 'flex';
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detail-modal').style.display = 'none';
-            currentReservasiId = null;
-        }
-
-        function hapusReservasi() {
-            if (!currentReservasiId) return;
-
-            if (!confirm('Apakah Anda yakin ingin menghapus reservasi ini?')) {
-                return;
-            }
-
-            showLoadingModal('Menghapus dari Firebase...');
-
-            database.ref('reservasi/' + currentReservasiId).remove()
-                .then(() => {
-                    alert('Reservasi berhasil dihapus dari Firebase!');
-                    closeDetailModal();
-                    updateDashboard();
-                })
-                .catch((error) => {
-                    alert('Gagal menghapus reservasi: ' + error.message);
-                })
-                .finally(() => {
-                    hideLoadingModal();
-                });
-        }
-
-        // Pengaturan Functions
-        function loadPengaturanData() {
-            const p = dataApp.pengaturan.perusahaan || {};
             
-            document.getElementById('nama-perusahaan').value = p.nama || 'Bukit Sampalan Asri';
-            document.getElementById('harga-tiket').value = p.hargaTiket || 15000;
-            document.getElementById('jam-checkin').value = p.jamCheckin || '14:00';
-            document.getElementById('jam-checkout').value = p.jamCheckout || '12:00';
-            document.getElementById('no-layanan').value = p.noLayanan || '+62812-9639-2270';
-            document.getElementById('dp-percentage').value = dataApp.pengaturan.dpPercentage || 50;
+            document.getElementById('invoice-modal').style.display = 'flex';
         }
 
-        function simpanPengaturan() {
-            const pengaturanData = {
+        function closeInvoiceModal() {
+            document.getElementById('invoice-modal').style.display = 'none';
+        }
+
+        function cetakInvoice() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            const content = document.getElementById('invoice-detail').textContent;
+            doc.text(content, 10, 10);
+            doc.save('invoice.pdf');
+        }
+
+        // ============================
+        // LAPAK STATUS FUNCTIONS
+        // ============================
+        function updateLapakStatus() {
+            const tanggal = document.getElementById('filter-tanggal-lapak').value;
+            
+            // Update lapak status
+            const lapakTbody = document.getElementById('lapak-status');
+            lapakTbody.innerHTML = '';
+            
+            dataApp.lapakTenda.forEach(lapak => {
+                // Check if lapak is reserved on this date
+                const isReserved = dataApp.reservasi.some(r => 
+                    r.kodeLokasi === lapak.kode && 
+                    r.tanggalCheckin <= tanggal && 
+                    r.tanggalCheckout >= tanggal
+                );
+                
+                lapak.status = isReserved ? 'terpakai' : 'tersedia';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${lapak.kode}</td>
+                    <td><span class="badge badge-${lapak.status === 'tersedia' ? 'success' : 'danger'}">${lapak.status}</span></td>
+                    <td>${formatRupiah(lapak.harga)}</td>
+                    <td>${lapak.kapasitas} orang</td>
+                    <td>${isReserved ? 'Dipesan' : 'Tersedia'}</td>
+                `;
+                lapakTbody.appendChild(row);
+            });
+            
+            // Update glamping status
+            const glampingTbody = document.getElementById('glamping-status');
+            glampingTbody.innerHTML = '';
+            
+            dataApp.glamping.forEach(glamping => {
+                // Check if glamping is reserved on this date
+                const isReserved = dataApp.reservasi.some(r => 
+                    r.kodeLokasi === glamping.kode && 
+                    r.tanggalCheckin <= tanggal && 
+                    r.tanggalCheckout >= tanggal
+                );
+                
+                glamping.status = isReserved ? 'terpakai' : 'tersedia';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${glamping.kode}</td>
+                    <td>${glamping.nama}</td>
+                    <td><span class="badge badge-${glamping.status === 'tersedia' ? 'success' : 'danger'}">${glamping.status}</span></td>
+                    <td>${formatRupiah(glamping.harga)}</td>
+                    <td>${glamping.kapasitas} orang</td>
+                    <td>${isReserved ? 'Dipesan' : 'Tersedia'}</td>
+                `;
+                glampingTbody.appendChild(row);
+            });
+        }
+
+        // ============================
+        // LAPORAN FUNCTIONS
+        // ============================
+        function generateLaporan() {
+            const periode = document.getElementById('periode-laporan').value;
+            const today = new Date();
+            
+            let startDate, endDate;
+            
+            switch(periode) {
+                case 'hari-ini':
+                    startDate = endDate = formatDate(today);
+                    break;
+                case 'minggu-ini':
+                    const firstDay = new Date(today.setDate(today.getDate() - today.getDay()));
+                    startDate = formatDate(firstDay);
+                    endDate = formatDate(new Date());
+                    break;
+                case 'bulan-ini':
+                    startDate = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+                    endDate = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+                    break;
+                case 'tahun-ini':
+                    startDate = formatDate(new Date(today.getFullYear(), 0, 1));
+                    endDate = formatDate(new Date(today.getFullYear(), 11, 31));
+                    break;
+            }
+            
+            // Filter reservasi by period
+            const laporanReservasi = dataApp.reservasi.filter(r => {
+                const tglReservasi = new Date(r.tanggalReservasi);
+                return tglReservasi >= new Date(startDate) && tglReservasi <= new Date(endDate);
+            });
+            
+            // Calculate statistics
+            const totalOmzet = laporanReservasi.reduce((sum, r) => sum + (r.totalBiaya || 0), 0);
+            const totalTransaksi = laporanReservasi.length;
+            const lapakTerjual = laporanReservasi.filter(r => r.jenis === 'tenda').length;
+            const glampingTerjual = laporanReservasi.filter(r => r.jenis === 'glamping').length;
+            
+            // Update statistics cards
+            document.getElementById('total-omzet').textContent = formatRupiah(totalOmzet);
+            document.getElementById('total-transaksi').textContent = totalTransaksi;
+            document.getElementById('lapak-terjual').textContent = lapakTerjual;
+            document.getElementById('glamping-terjual').textContent = glampingTerjual;
+            
+            // Update detail table
+            const tbody = document.getElementById('detail-laporan');
+            tbody.innerHTML = '';
+            
+            laporanReservasi.forEach(reservasi => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDateID(reservasi.tanggalReservasi)}</td>
+                    <td>${reservasi.invoice}</td>
+                    <td>${reservasi.jenis}</td>
+                    <td>${reservasi.nama}</td>
+                    <td>${formatRupiah(reservasi.totalBiaya)}</td>
+                    <td><span class="badge badge-${reservasi.status === 'lunas' ? 'success' : 'warning'}">${reservasi.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function exportLaporanPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            doc.text('Laporan Keuangan - Bukit Sampalan Asri', 10, 10);
+            doc.text(`Periode: ${document.getElementById('periode-laporan').value}`, 10, 20);
+            doc.text(`Total Omzet: ${document.getElementById('total-omzet').textContent}`, 10, 30);
+            doc.text(`Total Transaksi: ${document.getElementById('total-transaksi').textContent}`, 10, 40);
+            
+            doc.save('laporan.pdf');
+        }
+
+        // ============================
+        // PENGATURAN FUNCTIONS
+        // ============================
+        function loadPengaturanForm() {
+            const p = dataApp.pengaturan.perusahaan;
+            const settings = dataApp.pengaturan;
+            
+            document.getElementById('nama-perusahaan').value = p.nama || '';
+            document.getElementById('harga-tiket').value = p.hargaTiket || '';
+            document.getElementById('jam-checkin').value = p.jamCheckin || '';
+            document.getElementById('jam-checkout').value = p.jamCheckout || '';
+            document.getElementById('dp-percentage').value = settings.dpPercentage || '';
+            document.getElementById('no-layanan').value = p.noLayanan || '';
+        }
+
+        async function simpanPengaturan() {
+            const pengaturan = {
                 perusahaan: {
                     nama: document.getElementById('nama-perusahaan').value,
                     hargaTiket: parseInt(document.getElementById('harga-tiket').value) || 15000,
@@ -1291,157 +1993,164 @@
                 },
                 dpPercentage: parseInt(document.getElementById('dp-percentage').value) || 50
             };
-
-            showLoadingModal('Menyimpan pengaturan ke Firebase...');
-
-            saveToFirebase('pengaturan', pengaturanData)
-                .then((success) => {
-                    if (success) {
-                        const successMsg = document.getElementById('save-success');
-                        successMsg.classList.remove('hidden');
-                        setTimeout(() => {
-                            successMsg.classList.add('hidden');
-                        }, 3000);
-                    }
-                })
-                .finally(() => {
-                    hideLoadingModal();
-                });
+            
+            dataApp.pengaturan = pengaturan;
+            await saveData();
+            showAlert('success', 'Pengaturan berhasil disimpan');
         }
 
-        // Backup & Restore Functions
-        function backupToLocal() {
-            const backupData = {
-                reservasi: dataApp.reservasi,
-                pengaturan: dataApp.pengaturan,
-                users: dataApp.users,
-                backupDate: new Date().toISOString(),
-                version: '1.0'
+        // ============================
+        // BACKUP FUNCTIONS
+        // ============================
+        function backupData() {
+            const backup = {
+                data: dataApp,
+                timestamp: new Date().toISOString(),
+                version: '2.0'
             };
-
-            const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: 'application/json' });
+            
+            const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = `backup-bsa-${new Date().toISOString().slice(0, 10)}.json`;
+            a.download = `backup-reservasi-${new Date().toISOString().split('T')[0]}.json`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-
-            alert('Backup berhasil didownload!');
+            
+            showAlert('success', 'Backup berhasil didownload');
         }
 
-        function restoreFromLocal() {
+        function restoreData() {
             const input = document.createElement('input');
             input.type = 'file';
             input.accept = '.json';
-
+            
             input.onchange = function(e) {
                 const file = e.target.files[0];
                 if (!file) return;
-
+                
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     try {
-                        const backupData = JSON.parse(e.target.result);
+                        const backup = JSON.parse(e.target.result);
                         
-                        if (!confirm(`PERINGATAN! Restore data akan menggantikan semua data di Firebase. Lanjutkan?`)) {
+                        if (!confirm('Restore akan menggantikan semua data saat ini. Lanjutkan?')) {
                             return;
                         }
-
-                        showLoadingModal('Mengunggah backup ke Firebase...');
-
-                        // Upload each dataset to Firebase
-                        Promise.all([
-                            saveToFirebase('reservasi', backupData.reservasi || {}),
-                            saveToFirebase('pengaturan', backupData.pengaturan || {}),
-                            saveToFirebase('users', backupData.users || {})
-                        ])
-                        .then(() => {
-                            alert('Backup berhasil diunggah ke Firebase! Sistem akan reload...');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 2000);
-                        })
-                        .catch((error) => {
-                            alert('Gagal mengunggah backup: ' + error.message);
-                        })
-                        .finally(() => {
-                            hideLoadingModal();
+                        
+                        dataApp = backup.data;
+                        saveData().then(() => {
+                            showAlert('success', 'Data berhasil direstore');
+                            loadData();
                         });
-
+                        
                     } catch (error) {
-                        alert('File backup tidak valid!');
+                        showAlert('danger', 'File backup tidak valid');
                     }
                 };
                 reader.readAsText(file);
             };
-
+            
             input.click();
         }
 
-        function resetLocalData() {
-            if (!confirm('PERINGATAN! Ini akan menghapus SEMUA data di localStorage. Lanjutkan?')) {
+        function resetData() {
+            if (!confirm('RESET akan menghapus SEMUA data. Tindakan ini tidak dapat dibatalkan. Lanjutkan?')) {
                 return;
             }
-
-            localStorage.clear();
-            alert('Data local berhasil direset! Halaman akan reload...');
-            setTimeout(() => {
-                location.reload();
-            }, 1000);
+            
+            if (currentDatabase === 'firebase') {
+                if (!confirm('Anda akan menghapus semua data dari Firebase. Lanjutkan?')) {
+                    return;
+                }
+            }
+            
+            // Reset to default
+            dataApp = {
+                reservasi: [],
+                lapakTenda: [],
+                glamping: [],
+                pengaturan: {
+                    perusahaan: {
+                        nama: "Bukit Sampalan Asri",
+                        hargaTiket: 15000,
+                        jamCheckin: "14:00",
+                        jamCheckout: "12:00",
+                        noLayanan: "+62812-9639-2270"
+                    },
+                    dpPercentage: 50
+                },
+                users: [
+                    { id: 1, username: 'admin', password: 'admin123', nama: 'Administrator', role: 'admin' },
+                    { id: 2, username: 'staff', password: 'staff123', nama: 'Staff Reservasi', role: 'staff' }
+                ]
+            };
+            
+            initializeDefaultData();
+            saveData().then(() => {
+                showAlert('success', 'Data berhasil direset');
+                loadData();
+            });
         }
 
-        // Event Listeners
-        document.addEventListener('DOMContentLoaded', () => {
+        // ============================
+        // INITIAL LOAD
+        // ============================
+        document.addEventListener('DOMContentLoaded', function() {
             // Set today's date for date inputs
             const today = formatDate(new Date());
-            const dateInputs = document.querySelectorAll('input[type="date"]');
-            dateInputs.forEach(input => {
+            document.querySelectorAll('input[type="date"]').forEach(input => {
                 if (!input.value) {
                     input.value = today;
                 }
             });
-
-            // Check if already logged in
-            const savedUser = localStorage.getItem('bsa_user');
-            if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    document.getElementById('login-screen').style.display = 'none';
-                    document.getElementById('main-app').style.display = 'block';
-                    initializeApp();
-                } catch (e) {
-                    localStorage.removeItem('bsa_user');
-                }
+            
+            // Load initial data from localStorage
+            loadFromLocalStorage();
+            
+            // Check if we have default data
+            if (dataApp.lapakTenda.length === 0) {
+                initializeDefaultData();
+                saveToLocalStorage();
             }
-
-            // Close modals when clicking outside
-            window.onclick = function(event) {
-                const detailModal = document.getElementById('detail-modal');
-                if (event.target === detailModal) {
-                    closeDetailModal();
-                }
-                
-                const loadingModal = document.getElementById('loading-modal');
-                if (event.target === loadingModal) {
-                    hideLoadingModal();
-                }
-            };
-
-            // Handle Enter key in login form
-            document.getElementById('password').addEventListener('keypress', function(e) {
+            
+            // Update DP calculation events
+            document.getElementById('total-biaya-tenda')?.addEventListener('input', updateDPTenda);
+            document.getElementById('total-biaya-glamping')?.addEventListener('input', updateDPGlamping);
+            
+            // Handle login form enter key
+            document.getElementById('password')?.addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     login();
                 }
             });
         });
 
-        // Navigation
-        function navigateTo(section) {
-            showSection(section);
-        }
+        // ============================
+        // GLOBAL EXPORTS
+        // ============================
+        window.selectDatabase = selectDatabase;
+        window.pilihDatabase = pilihDatabase;
+        window.login = login;
+        window.logout = logout;
+        window.showSection = showSection;
+        window.changeReservasiTab = changeReservasiTab;
+        window.changePengaturanTab = changePengaturanTab;
+        window.simpanReservasi = simpanReservasi;
+        window.filterInvoice = filterInvoice;
+        window.viewInvoice = viewInvoice;
+        window.closeInvoiceModal = closeInvoiceModal;
+        window.cetakInvoice = cetakInvoice;
+        window.updateLapakStatus = updateLapakStatus;
+        window.generateLaporan = generateLaporan;
+        window.exportLaporanPDF = exportLaporanPDF;
+        window.simpanPengaturan = simpanPengaturan;
+        window.syncData = syncData;
+        window.backupData = backupData;
+        window.restoreData = restoreData;
+        window.resetData = resetData;
     </script>
 </body>
 </html>
