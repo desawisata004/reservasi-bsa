@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "reservations": {
+      "$resId": {
+        ".read": "auth != null",
+        ".write": "auth != null",
+        ".validate": "newData.hasChildren(['name','phone','date','createdAt']) &&\n                     newData.child('name').isString() &&\n                     newData.child('phone').isString() &&\n                     newData.child('date').isString() &&\n                     newData.child('createdAt').isNumber()"
+      }
+    }
+  }
+}
