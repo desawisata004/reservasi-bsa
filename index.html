@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
     <style>
         :root {
             --primary-color: #2e7d32;
@@ -254,7 +250,7 @@
             padding: 10px 12px;
             border: 1px solid #ddd;
             border-radius: 5px;
-            font-size: 16px !important;
+            font-size: 16px !important; /* Prevents zoom on iOS */
             transition: border 0.3s;
             -webkit-appearance: none;
             appearance: none;
@@ -671,6 +667,7 @@
                 grid-template-columns: 1fr;
             }
             
+            /* Improved mobile table scrolling */
             .table {
                 min-width: 650px;
             }
@@ -1178,7 +1175,7 @@
         
         /* Mobile optimization for forms */
         input, select, textarea {
-            font-size: 16px !important;
+            font-size: 16px !important; /* Prevents zoom on iOS */
         }
         
         /* Better touch feedback */
@@ -1346,44 +1343,9 @@
         nav ul.active {
             animation: slideDown 0.3s ease forwards;
         }
-        
-        /* Firebase Connection Status */
-        .firebase-status {
-            position: fixed;
-            bottom: 10px;
-            left: 10px;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 0.7rem;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .firebase-online {
-            background-color: var(--success-color);
-            color: white;
-        }
-        
-        .firebase-offline {
-            background-color: var(--danger-color);
-            color: white;
-        }
-        
-        .firebase-syncing {
-            background-color: var(--warning-color);
-            color: #333;
-        }
     </style>
 </head>
 <body>
-    <!-- Firebase Connection Status -->
-    <div id="firebase-status" class="firebase-status firebase-online hidden">
-        <i class="fas fa-wifi"></i>
-        <span>Online</span>
-    </div>
-    
     <!-- Scroll to top button -->
     <div class="scroll-top" onclick="scrollToTop()">
         <i class="fas fa-chevron-up"></i>
@@ -2685,7 +2647,7 @@
                     <div class="footer-section">
                         <h3>Developer</h3>
                         <p>Powered by AI Assistant</p>
-                        <p>Versi: 2025v12 (Firebase Realtime)</p>
+                        <p>Versi: 2025v12 (Backup & Bug Fix)</p>
                     </div>
                 </div>
                 <div class="copyright">
@@ -2696,286 +2658,9 @@
     </div>
     
     <script>
-        // ==================== FIREBASE CONFIGURATION ====================
-        // GANTI DENGAN KONFIGURASI FIREBASE ANDA SENDIRI
-        const firebaseConfig = {
-            apiKey: "AIzaSyDEXAMPLE1234567890abcdefghijklmnop",
-            authDomain: "your-project-id.firebaseapp.com",
-            databaseURL: "https://your-project-id-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "your-project-id",
-            storageBucket: "your-project-id.appspot.com",
-            messagingSenderId: "1234567890",
-            appId: "1:1234567890:web:abcdef1234567890"
-        };
-
-        // Initialize Firebase
-        let firebaseApp;
-        let database;
-        let isFirebaseInitialized = false;
-        let isOnline = false;
-        let syncInProgress = false;
-        let pendingChanges = [];
-
-        // ==================== FIREBASE FUNCTIONS ====================
-        function initializeFirebase() {
-            try {
-                firebaseApp = firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
-                isFirebaseInitialized = true;
-                console.log("Firebase initialized successfully");
-                
-                // Setup connection monitoring
-                const connectedRef = database.ref(".info/connected");
-                connectedRef.on("value", (snap) => {
-                    isOnline = snap.val() === true;
-                    updateFirebaseStatus();
-                    
-                    if (isOnline && pendingChanges.length > 0) {
-                        syncPendingChanges();
-                    }
-                });
-                
-                // Load data from Firebase
-                loadDataFromFirebase();
-                
-            } catch (error) {
-                console.error("Firebase initialization error:", error);
-                alert("Firebase gagal diinisialisasi. Sistem akan berjalan dalam mode offline.");
-                loadFromLocalStorage();
-            }
-        }
-
-        function updateFirebaseStatus() {
-            const statusElement = document.getElementById('firebase-status');
-            if (!statusElement) return;
-            
-            if (syncInProgress) {
-                statusElement.className = 'firebase-status firebase-syncing';
-                statusElement.innerHTML = '<i class="fas fa-sync fa-spin"></i> <span>Menyinkronkan...</span>';
-                statusElement.classList.remove('hidden');
-            } else if (isOnline) {
-                statusElement.className = 'firebase-status firebase-online';
-                statusElement.innerHTML = '<i class="fas fa-wifi"></i> <span>Online</span>';
-                statusElement.classList.remove('hidden');
-            } else {
-                statusElement.className = 'firebase-status firebase-offline';
-                statusElement.innerHTML = '<i class="fas fa-wifi-slash"></i> <span>Offline</span>';
-                statusElement.classList.remove('hidden');
-            }
-        }
-
-        function syncPendingChanges() {
-            if (pendingChanges.length === 0 || syncInProgress) return;
-            
-            syncInProgress = true;
-            updateFirebaseStatus();
-            
-            const change = pendingChanges.shift();
-            executeFirebaseOperation(change.operation, change.path, change.data)
-                .then(() => {
-                    syncInProgress = false;
-                    updateFirebaseStatus();
-                    
-                    // Process next change if any
-                    if (pendingChanges.length > 0) {
-                        setTimeout(syncPendingChanges, 100);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Sync error:", error);
-                    syncInProgress = false;
-                    updateFirebaseStatus();
-                    // Keep the change in pendingChanges for retry
-                    pendingChanges.unshift(change);
-                });
-        }
-
-        function queueFirebaseOperation(operation, path, data) {
-            pendingChanges.push({ operation, path, data, timestamp: Date.now() });
-            
-            // Keep only last 100 changes to prevent memory issues
-            if (pendingChanges.length > 100) {
-                pendingChanges = pendingChanges.slice(-50);
-            }
-            
-            if (isOnline && !syncInProgress) {
-                syncPendingChanges();
-            }
-        }
-
-        async function executeFirebaseOperation(operation, path, data) {
-            const ref = database.ref(path);
-            
-            switch (operation) {
-                case 'set':
-                    await ref.set(data);
-                    break;
-                case 'update':
-                    await ref.update(data);
-                    break;
-                case 'push':
-                    await ref.push(data);
-                    break;
-                case 'remove':
-                    await ref.remove();
-                    break;
-            }
-            
-            return true;
-        }
-
-        async function loadDataFromFirebase() {
-            if (!isFirebaseInitialized) {
-                loadFromLocalStorage();
-                return;
-            }
-
-            showLoadingModal('Memuat data dari Firebase...');
-            
-            try {
-                // Load all data from Firebase
-                const snapshot = await database.ref('/').once('value');
-                
-                if (snapshot.exists()) {
-                    const firebaseData = snapshot.val();
-                    
-                    // Merge data from Firebase
-                    if (firebaseData.reservasi) {
-                        dataApp.reservasi = firebaseData.reservasi || [];
-                    }
-                    if (firebaseData.invoice) {
-                        dataApp.invoice = firebaseData.invoice || [];
-                    }
-                    if (firebaseData.lapakTenda) {
-                        dataApp.lapakTenda = firebaseData.lapakTenda || dataApp.lapakTenda;
-                    }
-                    if (firebaseData.glamping) {
-                        dataApp.glamping = firebaseData.glamping || dataApp.glamping;
-                    }
-                    if (firebaseData.barangSewa) {
-                        dataApp.barangSewa = firebaseData.barangSewa || dataApp.barangSewa;
-                    }
-                    if (firebaseData.akomodasiLainnya) {
-                        dataApp.akomodasiLainnya = firebaseData.akomodasiLainnya || dataApp.akomodasiLainnya;
-                    }
-                    if (firebaseData.users) {
-                        dataApp.users = firebaseData.users || dataApp.users;
-                    }
-                    if (firebaseData.pengaturan) {
-                        dataApp.pengaturan = { ...dataApp.pengaturan, ...firebaseData.pengaturan };
-                        if (firebaseData.pengaturan.perusahaan) {
-                            dataApp.pengaturan.perusahaan = { 
-                                ...dataApp.pengaturan.perusahaan, 
-                                ...firebaseData.pengaturan.perusahaan 
-                            };
-                        }
-                    }
-                    
-                    // Also save to localStorage as backup
-                    saveToLocalStorage();
-                    console.log("Data loaded from Firebase");
-                } else {
-                    // No data in Firebase, use localStorage
-                    loadFromLocalStorage();
-                    // Save local data to Firebase
-                    saveAllDataToFirebase();
-                }
-                
-                hideLoadingModal();
-                
-                // Setup realtime listeners
-                setupRealtimeListeners();
-                
-            } catch (error) {
-                console.error("Error loading from Firebase:", error);
-                hideLoadingModal();
-                loadFromLocalStorage();
-                alert("Gagal memuat data dari Firebase. Sistem berjalan dengan data lokal.");
-            }
-        }
-
-        function setupRealtimeListeners() {
-            if (!isFirebaseInitialized) return;
-            
-            // Listen for changes in realtime
-            const reservationsRef = database.ref('reservasi');
-            reservationsRef.on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    dataApp.reservasi = snapshot.val();
-                    updateDashboard();
-                    updateLapakVisualization();
-                    generateInvoiceList();
-                }
-            });
-            
-            const invoicesRef = database.ref('invoice');
-            invoicesRef.on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    dataApp.invoice = snapshot.val();
-                    generateInvoiceList();
-                    filterLaporan();
-                }
-            });
-            
-            const lapakRef = database.ref('lapakTenda');
-            lapakRef.on('value', (snapshot) => {
-                if (snapshot.exists()) {
-                    dataApp.lapakTenda = snapshot.val();
-                    updateDashboard();
-                    updateLapakStatus();
-                }
-            });
-        }
-
-        function saveAllDataToFirebase() {
-            if (!isFirebaseInitialized) return;
-            
-            const dataToSave = {
-                reservasi: dataApp.reservasi,
-                invoice: dataApp.invoice,
-                lapakTenda: dataApp.lapakTenda,
-                glamping: dataApp.glamping,
-                barangSewa: dataApp.barangSewa,
-                akomodasiLainnya: dataApp.akomodasiLainnya,
-                pengaturan: dataApp.pengaturan,
-                users: dataApp.users,
-                lastSync: new Date().toISOString()
-            };
-            
-            queueFirebaseOperation('set', '/', dataToSave);
-        }
-
-        // ==================== MODIFIED DATA HANDLING FUNCTIONS ====================
+        // Fix untuk bug dan peningkatan responsivitas
         
-        // Save data to both localStorage and Firebase
-        function saveToLocalStorage() {
-            try {
-                const dataToSave = {
-                    reservasi: dataApp.reservasi,
-                    invoice: dataApp.invoice,
-                    lapakTenda: dataApp.lapakTenda,
-                    glamping: dataApp.glamping,
-                    barangSewa: dataApp.barangSewa,
-                    akomodasiLainnya: dataApp.akomodasiLainnya,
-                    pengaturan: dataApp.pengaturan,
-                    users: dataApp.users,
-                    lastBackup: new Date().toISOString()
-                };
-                localStorage.setItem('reservasiDataBSA', JSON.stringify(dataToSave));
-                
-                // Also save to Firebase if initialized
-                if (isFirebaseInitialized) {
-                    queueFirebaseOperation('set', '/', dataToSave);
-                }
-            } catch (e) {
-                console.error('Error saving data:', e);
-                alert('Gagal menyimpan data. Kemungkinan storage penuh.');
-            }
-        }
-
-        // ==================== INITIALIZATION ====================
-        
-        // Utility Functions (keep all existing utility functions)
+        // Utility Functions
         function formatRupiah(number) {
             if (isNaN(number)) number = 0;
             return new Intl.NumberFormat('id-ID', {
@@ -3028,9 +2713,22 @@
             document.getElementById('loading-modal').style.display = 'none';
         }
         
+        // Scroll to top function
         function scrollToTop() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        
+        // Show scroll to top button on scroll
+        window.addEventListener('scroll', function() {
+            const scrollTopBtn = document.querySelector('.scroll-top');
+            if (window.scrollY > 300) {
+                scrollTopBtn.style.display = 'flex';
+            } else {
+                scrollTopBtn.style.display = 'none';
+            }
+        });
+
+        // --- Data Handling ---
         
         // Initial Data
         let dataApp = {
@@ -3127,13 +2825,14 @@
             user: null,
         };
 
-        // Load data from localStorage (for offline use)
+        // Load data dari localStorage
         function loadFromLocalStorage() {
             try {
                 const storedData = localStorage.getItem('reservasiDataBSA');
                 if (storedData) {
                     const loadedData = JSON.parse(storedData);
                     
+                    // Merge data dengan hati-hati
                     dataApp.reservasi = loadedData.reservasi || [];
                     dataApp.invoice = loadedData.invoice || [];
                     dataApp.lapakTenda = loadedData.lapakTenda || dataApp.lapakTenda;
@@ -3142,19 +2841,60 @@
                     dataApp.akomodasiLainnya = loadedData.akomodasiLainnya || dataApp.akomodasiLainnya;
                     dataApp.users = loadedData.users || dataApp.users;
                     
+                    // Pastikan pengaturan ada
                     if (loadedData.pengaturan) {
                         dataApp.pengaturan = { ...dataApp.pengaturan, ...loadedData.pengaturan };
                         if (loadedData.pengaturan.perusahaan) {
                             dataApp.pengaturan.perusahaan = { ...dataApp.pengaturan.perusahaan, ...loadedData.pengaturan.perusahaan };
                         }
                     }
+                    
+                    // Validasi data penting
+                    if (!dataApp.lapakTenda || dataApp.lapakTenda.length === 0) {
+                        // Reset ke data default jika data lapak kosong
+                        dataApp.lapakTenda = [
+                            { kode: 'D01', harga: 0, kapasitas: 4, status: 'tersedia' },
+                            { kode: 'D02', harga: 0, kapasitas: 4, status: 'tersedia' },
+                            { kode: 'D03', harga: 0, kapasitas: 4, status: 'tersedia' },
+                        ];
+                    }
+                    
+                    if (!dataApp.glamping || dataApp.glamping.length === 0) {
+                        dataApp.glamping = [
+                            { kode: 'G01', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                            { kode: 'G02', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                        ];
+                    }
                 }
             } catch (e) {
                 console.error('Error loading from localStorage:', e);
+                // Tetap gunakan data default jika error
             }
         }
 
-        // ==================== AUTHENTICATION ====================
+        // Save data ke localStorage
+        function saveToLocalStorage() {
+            try {
+                const dataToSave = {
+                    reservasi: dataApp.reservasi,
+                    invoice: dataApp.invoice,
+                    lapakTenda: dataApp.lapakTenda,
+                    glamping: dataApp.glamping,
+                    barangSewa: dataApp.barangSewa,
+                    akomodasiLainnya: dataApp.akomodasiLainnya,
+                    pengaturan: dataApp.pengaturan,
+                    users: dataApp.users,
+                    lastBackup: new Date().toISOString()
+                };
+                localStorage.setItem('reservasiDataBSA', JSON.stringify(dataToSave));
+            } catch (e) {
+                console.error('Error saving to localStorage:', e);
+                alert('Gagal menyimpan data ke localStorage. Kemungkinan storage penuh.');
+            }
+        }
+
+        // --- Authentication ---
+
         function login() {
             const usernameInput = document.getElementById('username').value.trim();
             const passwordInput = document.getElementById('password').value;
@@ -3188,11 +2928,13 @@
                 document.getElementById('login-form').reset();
                 document.getElementById('login-error').classList.add('hidden');
                 
+                // Close mobile menu if open
                 document.getElementById('main-nav').classList.remove('active');
             }
         }
 
-        // ==================== INITIALIZE APP ====================
+        // --- Initialization ---
+
         function initializeApp() {
             const user = dataApp.user;
             if (!user) return;
@@ -3244,31 +2986,3003 @@
             loadInvoiceOptions();
             loadPengaturanData();
             
+            // Initialize akomodasi selection
             generateAkomodasiOptions('tenda');
             generateAkomodasiOptions('glamping');
             
+            // Update footer info
             document.getElementById('footer-no-layanan').textContent = dataApp.pengaturan.perusahaan.noLayanan;
             
+            // Hide mobile menu on initialization
             document.getElementById('main-nav').classList.remove('active');
             
+            // Update backup counts
             updateBackupCounts();
         }
 
-        // ==================== ALL OTHER FUNCTIONS REMAIN THE SAME ====================
-        // [Semua fungsi JavaScript yang ada tetap sama dari sini...]
-        // Fungsi-fungsi seperti showSection, updateDashboard, submitReservasi, dll.
-        // Tetap sama seperti dalam kode asli Anda
+        function showSection(sectionId) {
+            const nav = document.getElementById('main-nav');
+            nav.classList.remove('active');
 
-        // Untuk menjaga panjang kode, saya akan menunjukkan bahwa semua fungsi lainnya
-        // tetap sama seperti yang sudah Anda miliki. Hanya fungsi saveToLocalStorage
-        // yang sudah dimodifikasi untuk juga menyimpan ke Firebase.
+            const user = dataApp.user;
+            if (!user) return;
 
-        // ==================== EVENT LISTENERS ====================
-        document.addEventListener('DOMContentLoaded', (event) => {
-            // Initialize Firebase
-            initializeFirebase();
+            if ((sectionId === 'pengaturan' || sectionId === 'users' || sectionId === 'backup') && user.role !== 'admin') {
+                alert('Hanya Admin yang dapat mengakses halaman ini!');
+                return;
+            }
+
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.classList.add('hidden');
+            });
+
+            document.getElementById(sectionId + '-section').classList.remove('hidden');
+
+            document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+            const activeNav = document.querySelector(`nav a[onclick="showSection('${sectionId}')"]`);
+            if (activeNav) {
+                activeNav.classList.add('active');
+            }
+
+            if (sectionId === 'reservasi') {
+                const today = formatDate(new Date());
+                const nextDay = formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
+                
+                document.getElementById('tanggal-checkin-tenda').value = today;
+                document.getElementById('tanggal-checkout-tenda').value = nextDay;
+                document.getElementById('tanggal-checkin-glamping').value = today;
+                document.getElementById('tanggal-checkout-glamping').value = nextDay;
+
+                document.getElementById('max-lapak-info').textContent = dataApp.pengaturan.maxLapakPerReservasi;
+                document.getElementById('dp-percentage-info-tenda').textContent = dataApp.pengaturan.dpPercentage;
+                document.getElementById('dp-percentage-info-glamping').textContent = dataApp.pengaturan.dpPercentage;
+
+                hitungJumlahMalam('tenda');
+                hitungJumlahMalam('glamping');
+                updateLapakStatus();
+                updateGlampingStatus();
+                
+                // Reset akomodasi selection
+                dataApp.akomodasiLainnya.forEach(akomodasi => {
+                    akomodasi.status = 'tersedia';
+                    akomodasi.jumlah = 0;
+                });
+                generateAkomodasiOptions('tenda');
+                generateAkomodasiOptions('glamping');
+            } else if (sectionId === 'lapak') {
+                document.getElementById('tanggal-visualisasi').value = formatDate(new Date());
+                updateLapakVisualization();
+            } else if (sectionId === 'invoice') {
+                generateInvoiceList();
+                loadInvoiceOptions();
+            } else if (sectionId === 'laporan') {
+                filterLaporan();
+            } else if (sectionId === 'pengaturan') {
+                loadPengaturanData();
+                generatePengaturanLapak();
+                generatePengaturanGlamping();
+                generatePengaturanBarang();
+                generatePengaturanAkomodasi();
+            } else if (sectionId === 'users') {
+                generateUsersList();
+            } else if (sectionId === 'backup') {
+                updateBackupCounts();
+            }
             
-            // Load data from localStorage first (for faster loading)
+            // Scroll to top when changing sections
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function toggleMobileMenu() {
+            const nav = document.getElementById('main-nav');
+            nav.classList.toggle('active');
+            
+            // Toggle icon
+            const menuIcon = document.querySelector('.menu-toggle i');
+            if (nav.classList.contains('active')) {
+                menuIcon.classList.remove('fa-bars');
+                menuIcon.classList.add('fa-times');
+            } else {
+                menuIcon.classList.remove('fa-times');
+                menuIcon.classList.add('fa-bars');
+            }
+        }
+
+        // --- Dashboard & Status ---
+
+        function getReservedCodes(jenis, tanggal) {
+            const reserved = [];
+            if (!tanggal) return reserved;
+
+            dataApp.reservasi.forEach(r => {
+                if (r.jenis === jenis && (r.status === 'dibayar' || r.status === 'aktif' || r.status === 'pending')) {
+                    const checkin = r.tanggalCheckin;
+                    const checkout = r.tanggalCheckout;
+                    
+                    if (tanggal >= checkin && tanggal < checkout) {
+                        if (jenis === 'tenda') {
+                            if (Array.isArray(r.lapak)) {
+                                reserved.push(...r.lapak);
+                            }
+                        } else {
+                            if (Array.isArray(r.glamping)) {
+                                reserved.push(...r.glamping);
+                            }
+                        }
+                    }
+                }
+            });
+            return [...new Set(reserved)];
+        }
+
+        function updateDashboard() {
+            const today = formatDate(new Date());
+            const filterDate = document.getElementById('filter-tanggal').value || today;
+
+            let lapakTerpakai = 0;
+            let glampingTerpakai = 0;
+            let pengunjungHariIni = 0;
+            let omzetHarian = 0;
+
+            const reservedLapak = getReservedCodes('tenda', filterDate);
+            const reservedGlamping = getReservedCodes('glamping', filterDate);
+
+            lapakTerpakai = reservedLapak.length;
+            glampingTerpakai = reservedGlamping.length;
+
+            dataApp.reservasi.forEach(r => {
+                if (r.status === 'aktif' || r.status === 'dibayar' || r.status === 'pending') {
+                    const checkin = r.tanggalCheckin;
+                    const checkout = r.tanggalCheckout;
+                    if (filterDate >= checkin && filterDate < checkout) {
+                        pengunjungHariIni += parseInt(r.jumlahOrang) || 0;
+                    }
+                }
+            });
+
+            const hariIniFormatted = formatDate(new Date());
+            dataApp.invoice.forEach(inv => {
+                if (inv.status === 'selesai' && inv.tanggalSelesai === hariIniFormatted) {
+                    omzetHarian += parseInt(inv.totalBiaya) || 0;
+                }
+                if ((inv.status === 'pending' || inv.status === 'dibayar') && inv.tanggalReservasi === hariIniFormatted) {
+                    if (inv.paymentMethod === 'transfer' || inv.paymentMethod === 'sekarang') {
+                        omzetHarian += parseInt(inv.dp) || 0; 
+                    }
+                }
+                if (inv.status === 'dibayar' && inv.tanggalReservasi === hariIniFormatted && (inv.paymentMethod === 'lokasi')) {
+                    omzetHarian += parseInt(inv.totalBiaya) || 0;
+                }
+            });
+
+            const startOfMonth = formatDate(new Date(new Date().getFullYear(), new Date().getMonth(), 1));
+            const reservasiBulanIni = dataApp.reservasi.filter(r => r.tanggalReservasi >= startOfMonth).length;
+
+            const totalLapak = dataApp.lapakTenda.length;
+            const totalGlamping = dataApp.glamping.length;
+
+            const lapakTersediaHariIni = totalLapak - lapakTerpakai;
+            const glampingTersediaHariIni = totalGlamping - glampingTerpakai;
+
+            document.getElementById('lapak-tersedia').textContent = lapakTersediaHariIni;
+            document.getElementById('lapak-terpakai').textContent = lapakTerpakai;
+            document.getElementById('glamping-terpakai').textContent = glampingTerpakai;
+            document.getElementById('pengunjung-hari-ini').textContent = pengunjungHariIni;
+            document.getElementById('omzet-harian').textContent = formatRupiah(omzetHarian);
+            document.getElementById('reservasi-bulan-ini').textContent = reservasiBulanIni;
+
+            const lapakContainer = document.getElementById('lapak-status-container');
+            const glampingContainer = document.getElementById('glamping-status-container');
+            
+            lapakContainer.innerHTML = '';
+            dataApp.lapakTenda.forEach(lapak => {
+                const isReserved = reservedLapak.includes(lapak.kode);
+                const item = document.createElement('div');
+                item.classList.add('lapak-item', isReserved ? 'lapak-terpakai' : 'lapak-tersedia');
+                item.textContent = lapak.kode;
+                
+                const tooltip = document.createElement('span');
+                tooltip.classList.add('lapak-tooltip');
+                tooltip.textContent = isReserved ? 'Terpakai' : `Tersedia. Harga: ${formatRupiah(lapak.harga)}/malam`;
+                item.appendChild(tooltip);
+                
+                lapakContainer.appendChild(item);
+            });
+            
+            glampingContainer.innerHTML = '';
+            dataApp.glamping.forEach(glamping => {
+                const isReserved = reservedGlamping.includes(glamping.kode);
+                const item = document.createElement('div');
+                item.classList.add('lapak-item', isReserved ? 'lapak-terpakai' : 'lapak-tersedia');
+                item.textContent = glamping.kode;
+                
+                const tooltip = document.createElement('span');
+                tooltip.classList.add('lapak-tooltip');
+                tooltip.textContent = isReserved ? 'Terpakai' : `Tersedia. ${glamping.nama} (${glamping.kapasitas} pax). Harga: ${formatRupiah(glamping.harga)}/malam`;
+                item.appendChild(tooltip);
+                
+                glampingContainer.appendChild(item);
+            });
+        }
+
+        // --- Reservasi Form ---
+
+        function hitungJumlahMalam(jenis) {
+            const checkinInput = document.getElementById(`tanggal-checkin-${jenis}`);
+            const checkoutInput = document.getElementById(`tanggal-checkout-${jenis}`);
+            const malamInput = document.getElementById(`jumlah-malam-${jenis}`);
+            
+            if (!checkinInput.value || !checkoutInput.value) {
+                malamInput.value = dataApp.pengaturan.minReservasiHari;
+                return;
+            }
+            
+            const checkin = new Date(checkinInput.value + 'T' + dataApp.pengaturan.jamCheckin);
+            const checkout = new Date(checkoutInput.value + 'T' + dataApp.pengaturan.jamCheckout);
+
+            const minReservasi = dataApp.pengaturan.minReservasiHari;
+            const maxReservasi = dataApp.pengaturan.maxReservasiHari;
+
+            if (checkout <= checkin) {
+                alert('Tanggal Check-out harus setelah tanggal Check-in.');
+                malamInput.value = minReservasi;
+                const newCheckout = new Date(checkin.getTime() + minReservasi * 24 * 60 * 60 * 1000);
+                checkoutInput.value = formatDate(newCheckout);
+            } else {
+                const diffTime = Math.abs(checkout - checkin);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                if (diffDays < minReservasi) {
+                    alert(`Minimal reservasi adalah ${minReservasi} malam.`);
+                    malamInput.value = minReservasi;
+                    const newCheckout = new Date(checkin.getTime() + minReservasi * 24 * 60 * 60 * 1000);
+                    checkoutInput.value = formatDate(newCheckout);
+                } else if (diffDays > maxReservasi) {
+                    alert(`Maksimal reservasi adalah ${maxReservasi} malam.`);
+                    malamInput.value = maxReservasi;
+                    const newCheckout = new Date(checkin.getTime() + maxReservasi * 24 * 60 * 60 * 1000);
+                    checkoutInput.value = formatDate(newCheckout);
+                } else {
+                    malamInput.value = diffDays;
+                }
+            }
+
+            if (jenis === 'tenda') {
+                updateLapakStatus();
+                hitungTotalBiayaTenda();
+            } else {
+                updateGlampingStatus();
+                hitungTotalBiayaGlamping();
+            }
+        }
+
+        function updateLapakStatus() {
+            const tanggalCheckin = document.getElementById('tanggal-checkin-tenda').value;
+            const lapakContainer = document.getElementById('lapak-pilih-container');
+            lapakContainer.innerHTML = '';
+
+            // Reset status dipilih
+            dataApp.lapakTenda.forEach(lapak => {
+                if (lapak.status === 'dipilih') {
+                    lapak.status = 'tersedia';
+                }
+            });
+
+            const lapakTerpakai = getReservedCodes('tenda', tanggalCheckin);
+
+            dataApp.lapakTenda.forEach(lapak => {
+                const isTerpakai = lapakTerpakai.includes(lapak.kode);
+                const lapakItem = document.createElement('div');
+                lapakItem.id = `lapak-${lapak.kode}`;
+                lapakItem.classList.add('lapak-item', isTerpakai ? 'lapak-terpakai' : 'lapak-tersedia');
+                lapakItem.textContent = lapak.kode;
+                lapakItem.dataset.kode = lapak.kode;
+                lapakItem.dataset.isTerpakai = isTerpakai;
+
+                if (!isTerpakai) {
+                    lapakItem.onclick = () => toggleLapakSelection(lapak.kode);
+                } else {
+                    lapakItem.classList.add('disabled');
+                }
+                
+                const tooltip = document.createElement('span');
+                tooltip.classList.add('lapak-tooltip');
+                tooltip.textContent = isTerpakai ? 'Sudah Terpakai' : `Tersedia. Harga: ${formatRupiah(lapak.harga)}/malam`;
+                lapakItem.appendChild(tooltip);
+
+                lapakContainer.appendChild(lapakItem);
+            });
+            hitungTotalBiayaTenda();
+        }
+
+        function updateGlampingStatus() {
+            const tanggalCheckin = document.getElementById('tanggal-checkin-glamping').value;
+            const glampingContainer = document.getElementById('glamping-pilih-container');
+            glampingContainer.innerHTML = '';
+
+            // Reset status dipilih
+            dataApp.glamping.forEach(glamping => {
+                if (glamping.status === 'dipilih') {
+                    glamping.status = 'tersedia';
+                }
+            });
+
+            const glampingTerpakai = getReservedCodes('glamping', tanggalCheckin);
+
+            dataApp.glamping.forEach(glamping => {
+                const isTerpakai = glampingTerpakai.includes(glamping.kode);
+                const isSelected = glamping.status === 'dipilih';
+                
+                const optionDiv = document.createElement('div');
+                optionDiv.id = `glamping-${glamping.kode}-option`;
+                optionDiv.classList.add('glamping-option', 'text-center');
+                if (isTerpakai) {
+                    optionDiv.classList.add('disabled');
+                    optionDiv.style.backgroundColor = 'var(--danger-color)';
+                    optionDiv.style.color = 'white';
+                } else if (isSelected) {
+                    optionDiv.classList.add('selected');
+                }
+                optionDiv.dataset.kode = glamping.kode;
+
+                if (!isTerpakai) {
+                    optionDiv.onclick = () => toggleGlampingSelection(glamping.kode);
+                    if (!isSelected) {
+                        optionDiv.style.backgroundColor = 'white';
+                    }
+                }
+
+                optionDiv.innerHTML = `
+                    <div style="font-size: 1rem; font-weight: bold; margin-bottom: 4px;">${glamping.kode}</div>
+                    <div style="font-size: 0.75rem; margin-bottom: 4px;">${glamping.nama}</div>
+                    <div style="font-size: 0.85rem; font-weight: 500;">${formatRupiah(glamping.harga)}/malam</div>
+                    <div style="font-size: 0.7rem; color: ${isTerpakai ? 'white' : 'var(--gray-color)'};">Kapasitas: ${glamping.kapasitas} orang</div>
+                    <div style="font-size: 0.65rem; margin-top: 4px;">${isTerpakai ? '<span class="badge badge-danger">TERPAKAI</span>' : '<span class="badge badge-success">TERSEDIA</span>'}</div>
+                `;
+                
+                glampingContainer.appendChild(optionDiv);
+            });
+            hitungTotalBiayaGlamping();
+        }
+
+        function toggleLapakSelection(kode) {
+            const lapak = dataApp.lapakTenda.find(l => l.kode === kode);
+            const element = document.getElementById(`lapak-${kode}`);
+            const maxLapak = dataApp.pengaturan.maxLapakPerReservasi;
+            
+            if (!lapak || !element) return;
+            
+            if (lapak.status === 'tersedia') {
+                const selectedCount = dataApp.lapakTenda.filter(l => l.status === 'dipilih').length;
+                if (selectedCount >= maxLapak) {
+                    alert(`Maksimal lapak yang dapat dipilih adalah ${maxLapak}.`);
+                    return;
+                }
+                lapak.status = 'dipilih';
+                element.classList.remove('lapak-tersedia');
+                element.classList.add('lapak-dipilih');
+            } else if (lapak.status === 'dipilih') {
+                lapak.status = 'tersedia';
+                element.classList.remove('lapak-dipilih');
+                element.classList.add('lapak-tersedia');
+            }
+            hitungTotalBiayaTenda();
+        }
+
+        function toggleGlampingSelection(kode) {
+            const glamping = dataApp.glamping.find(g => g.kode === kode);
+            const element = document.getElementById(`glamping-${kode}-option`);
+            const maxLapak = dataApp.pengaturan.maxLapakPerReservasi;
+
+            if (!glamping || !element) return;
+
+            if (glamping.status === 'tersedia') {
+                const selectedCount = dataApp.glamping.filter(g => g.status === 'dipilih').length;
+                if (selectedCount >= maxLapak) {
+                    alert(`Maksimal glamping yang dapat dipilih adalah ${maxLapak}.`);
+                    return;
+                }
+                glamping.status = 'dipilih';
+                element.classList.add('selected');
+            } else if (glamping.status === 'dipilih') {
+                glamping.status = 'tersedia';
+                element.classList.remove('selected');
+            }
+            hitungTotalBiayaGlamping();
+        }
+
+        // Akomodasi Lainnya Functions
+        function generateAkomodasiOptions(jenis) {
+            const container = document.getElementById(`akomodasi-${jenis}-container`);
+            if (!container) return;
+            
+            container.innerHTML = '';
+            
+            dataApp.akomodasiLainnya.forEach((akomodasi, index) => {
+                const item = document.createElement('div');
+                item.className = 'akomodasi-item';
+                item.dataset.id = akomodasi.id;
+                
+                const checkboxId = `akomodasi-${jenis}-${akomodasi.id}`;
+                const isSelected = akomodasi.status === 'dipilih';
+                
+                item.innerHTML = `
+                    <div class="akomodasi-checkbox">
+                        <input type="checkbox" id="${checkboxId}" data-id="${akomodasi.id}" 
+                            ${isSelected ? 'checked' : ''}
+                            onchange="toggleAkomodasiSelection(${akomodasi.id}, '${jenis}')">
+                        <label for="${checkboxId}" style="font-weight: bold; cursor: pointer; font-size: 0.9rem;">${akomodasi.nama}</label>
+                    </div>
+                    <div style="font-size: 0.8rem; color: var(--gray-color); margin: 4px 0;">
+                        Satuan: ${akomodasi.satuan} | Stok: ${akomodasi.stok}
+                    </div>
+                    <div class="akomodasi-price">${formatRupiah(akomodasi.harga)}</div>
+                    <div id="jumlah-akomodasi-${jenis}-${akomodasi.id}" style="display: ${isSelected ? 'block' : 'none'}; margin-top: 5px;">
+                        <label for="qty-${checkboxId}" style="font-size: 0.8rem;">Jumlah:</label>
+                        <input type="number" id="qty-${checkboxId}" class="form-control" 
+                            style="padding: 4px; font-size: 0.85rem;" 
+                            min="1" max="${akomodasi.stok}" value="${akomodasi.jumlah || 1}"
+                            onchange="updateAkomodasiJumlah(${akomodasi.id}, '${jenis}')"
+                            onkeyup="updateAkomodasiJumlah(${akomodasi.id}, '${jenis}')">
+                    </div>
+                `;
+                
+                if (isSelected) {
+                    item.classList.add('selected');
+                }
+                
+                container.appendChild(item);
+            });
+        }
+        
+        function toggleAkomodasiSelection(id, jenis) {
+            const akomodasi = dataApp.akomodasiLainnya.find(a => a.id === id);
+            if (!akomodasi) return;
+            
+            const checkbox = document.querySelector(`#akomodasi-${jenis}-container input[data-id="${id}"]`);
+            const jumlahDiv = document.getElementById(`jumlah-akomodasi-${jenis}-${id}`);
+            const itemDiv = checkbox.closest('.akomodasi-item');
+            
+            if (checkbox.checked) {
+                akomodasi.status = 'dipilih';
+                akomodasi.jumlah = akomodasi.jumlah || 1;
+                jumlahDiv.style.display = 'block';
+                itemDiv.classList.add('selected');
+            } else {
+                akomodasi.status = 'tersedia';
+                akomodasi.jumlah = 0;
+                jumlahDiv.style.display = 'none';
+                itemDiv.classList.remove('selected');
+            }
+            
+            if (jenis === 'tenda') {
+                hitungTotalBiayaTenda();
+            } else {
+                hitungTotalBiayaGlamping();
+            }
+        }
+        
+        function updateAkomodasiJumlah(id, jenis) {
+            const akomodasi = dataApp.akomodasiLainnya.find(a => a.id === id);
+            if (!akomodasi) return;
+            
+            const input = document.querySelector(`#akomodasi-${jenis}-container input#qty-akomodasi-${jenis}-${id}`);
+            if (!input) return;
+            
+            const jumlah = parseInt(input.value) || 1;
+            if (jumlah < 1) {
+                input.value = 1;
+                akomodasi.jumlah = 1;
+            } else if (jumlah > akomodasi.stok) {
+                input.value = akomodasi.stok;
+                akomodasi.jumlah = akomodasi.stok;
+                alert(`Jumlah melebihi stok yang tersedia. Maksimal: ${akomodasi.stok}`);
+            } else {
+                akomodasi.jumlah = jumlah;
+            }
+            
+            if (jenis === 'tenda') {
+                hitungTotalBiayaTenda();
+            } else {
+                hitungTotalBiayaGlamping();
+            }
+        }
+
+        function changeReservasiTab(tabElement, target) {
+            document.querySelectorAll('#reservasi-section .tabs .tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#reservasi-section .tab-content').forEach(content => content.classList.remove('active'));
+            tabElement.classList.add('active');
+            document.getElementById(`tab-${target}`).classList.add('active');
+
+            if (target === 'tenda') {
+                updateLapakStatus();
+                hitungTotalBiayaTenda();
+            } else if (target === 'glamping') {
+                updateGlampingStatus();
+                hitungTotalBiayaGlamping();
+            }
+        }
+        
+        function selectPaymentMethod(method, jenis) {
+            document.querySelectorAll(`#reservasi-${jenis}-form .payment-option`).forEach(opt => opt.classList.remove('selected'));
+            document.getElementById(`payment-${method}-${jenis}`).classList.add('selected');
+
+            const dpRow = document.getElementById(`dp-row-${jenis}`);
+            if (method === 'transfer') {
+                dpRow.style.display = 'table-row';
+            } else {
+                dpRow.style.display = 'none';
+            }
+        }
+
+        function hitungTotalBiayaTenda() {
+            const lapakTerpilih = dataApp.lapakTenda.filter(lapak => lapak.status === 'dipilih');
+            const jumlahMalam = parseInt(document.getElementById('jumlah-malam-tenda').value) || 0;
+            const jumlahOrang = parseInt(document.getElementById('jumlah-orang-tenda').value) || 0;
+            const hargaTiket = dataApp.pengaturan.perusahaan.hargaTiket;
+            const dpPercentage = dataApp.pengaturan.dpPercentage;
+
+            let totalBiayaLapak = 0;
+            lapakTerpilih.forEach(lapak => {
+                totalBiayaLapak += (lapak.harga || 0) * jumlahMalam;
+            });
+
+            const totalBiayaTiket = jumlahOrang * jumlahMalam * hargaTiket;
+            
+            // Hitung biaya akomodasi lainnya
+            let totalBiayaAkomodasi = 0;
+            const akomodasiTerpilih = dataApp.akomodasiLainnya.filter(a => a.status === 'dipilih' && a.jumlah > 0);
+            akomodasiTerpilih.forEach(akomodasi => {
+                totalBiayaAkomodasi += (akomodasi.harga || 0) * (akomodasi.jumlah || 0);
+            });
+            
+            const totalBiaya = totalBiayaLapak + totalBiayaTiket + totalBiayaAkomodasi;
+            const dp = totalBiaya * (dpPercentage / 100);
+
+            document.getElementById('lapak-dipilih-tenda-count').textContent = lapakTerpilih.length;
+            document.getElementById('jumlah-lapak-tenda').value = `${lapakTerpilih.length} Lapak`;
+            
+            document.getElementById('biaya-lapak-count').textContent = lapakTerpilih.length;
+            document.getElementById('biaya-lapak-malam').textContent = jumlahMalam;
+            document.getElementById('biaya-lapak-tenda').textContent = formatRupiah(totalBiayaLapak);
+            
+            document.getElementById('biaya-tiket-orang').textContent = jumlahOrang;
+            document.getElementById('biaya-tiket-malam').textContent = jumlahMalam;
+            document.getElementById('biaya-tiket-tenda').textContent = formatRupiah(totalBiayaTiket);
+            
+            // Update akomodasi display
+            const akomodasiRow = document.getElementById('akomodasi-row-tenda');
+            const akomodasiCount = akomodasiTerpilih.length;
+            document.getElementById('akomodasi-dipilih-tenda-count').textContent = akomodasiCount;
+            
+            if (akomodasiCount > 0) {
+                akomodasiRow.style.display = 'table-row';
+                document.getElementById('biaya-akomodasi-tenda').textContent = formatRupiah(totalBiayaAkomodasi);
+            } else {
+                akomodasiRow.style.display = 'none';
+            }
+            
+            document.getElementById('total-biaya-tenda').textContent = formatRupiah(totalBiaya);
+            document.getElementById('dp-percentage-tenda').textContent = dpPercentage;
+            document.getElementById('dp-tenda').textContent = formatRupiah(dp);
+        }
+
+        function hitungTotalBiayaGlamping() {
+            const glampingTerpilih = dataApp.glamping.filter(glamping => glamping.status === 'dipilih');
+            const jumlahMalam = parseInt(document.getElementById('jumlah-malam-glamping').value) || 0;
+            const jumlahOrang = parseInt(document.getElementById('jumlah-orang-glamping').value) || 0;
+            const hargaTiket = dataApp.pengaturan.perusahaan.hargaTiket;
+            const dpPercentage = dataApp.pengaturan.dpPercentage;
+
+            let totalBiayaGlamping = 0;
+            glampingTerpilih.forEach(glamping => {
+                totalBiayaGlamping += (glamping.harga || 0) * jumlahMalam;
+            });
+
+            const totalBiayaTiket = jumlahOrang * jumlahMalam * hargaTiket;
+            
+            // Hitung biaya akomodasi lainnya
+            let totalBiayaAkomodasi = 0;
+            const akomodasiTerpilih = dataApp.akomodasiLainnya.filter(a => a.status === 'dipilih' && a.jumlah > 0);
+            akomodasiTerpilih.forEach(akomodasi => {
+                totalBiayaAkomodasi += (akomodasi.harga || 0) * (akomodasi.jumlah || 0);
+            });
+            
+            const totalBiaya = totalBiayaGlamping + totalBiayaTiket + totalBiayaAkomodasi;
+            const dp = totalBiaya * (dpPercentage / 100);
+
+            document.getElementById('glamping-dipilih-count').textContent = glampingTerpilih.length;
+            document.getElementById('jumlah-glamping').value = `${glampingTerpilih.length} Unit`;
+
+            document.getElementById('glamping-dipilih-count-biaya').textContent = glampingTerpilih.length;
+            document.getElementById('biaya-glamping-malam').textContent = jumlahMalam;
+            document.getElementById('biaya-glamping').textContent = formatRupiah(totalBiayaGlamping);
+            
+            document.getElementById('biaya-tiket-orang-glamping').textContent = jumlahOrang;
+            document.getElementById('biaya-tiket-malam-glamping').textContent = jumlahMalam;
+            document.getElementById('biaya-tiket-glamping').textContent = formatRupiah(totalBiayaTiket);
+            
+            // Update akomodasi display
+            const akomodasiRow = document.getElementById('akomodasi-row-glamping');
+            const akomodasiCount = akomodasiTerpilih.length;
+            document.getElementById('akomodasi-dipilih-glamping-count').textContent = akomodasiCount;
+            
+            if (akomodasiCount > 0) {
+                akomodasiRow.style.display = 'table-row';
+                document.getElementById('biaya-akomodasi-glamping').textContent = formatRupiah(totalBiayaAkomodasi);
+            } else {
+                akomodasiRow.style.display = 'none';
+            }
+            
+            document.getElementById('total-biaya-glamping').textContent = formatRupiah(totalBiaya);
+            document.getElementById('dp-percentage-glamping').textContent = dpPercentage;
+            document.getElementById('dp-glamping').textContent = formatRupiah(dp);
+        }
+
+        function submitReservasi(jenis) {
+            const form = document.getElementById(`reservasi-${jenis}-form`);
+            if (!form.checkValidity()) {
+                alert('Harap lengkapi semua field yang wajib diisi.');
+                form.reportValidity();
+                return;
+            }
+
+            const isTenda = jenis === 'tenda';
+            const selectedItems = isTenda ? dataApp.lapakTenda.filter(l => l.status === 'dipilih') : dataApp.glamping.filter(g => g.status === 'dipilih');
+
+            if (selectedItems.length === 0) {
+                alert(`Harap pilih minimal 1 ${jenis === 'tenda' ? 'lapak' : 'glamping'} untuk reservasi.`);
+                return;
+            }
+
+            const nama = document.getElementById(`nama-${jenis}`).value.trim();
+            const telepon = document.getElementById(`telepon-${jenis}`).value.trim();
+            const email = document.getElementById(`email-${jenis}`).value.trim();
+            const tanggalCheckin = document.getElementById(`tanggal-checkin-${jenis}`).value;
+            const tanggalCheckout = document.getElementById(`tanggal-checkout-${jenis}`).value;
+            const jumlahMalam = parseInt(document.getElementById(`jumlah-malam-${jenis}`).value) || 1;
+            const jumlahOrang = parseInt(document.getElementById(`jumlah-orang-${jenis}`).value) || 1;
+            
+            const totalBiayaElement = document.getElementById(`total-biaya-${jenis}`).textContent;
+            const totalBiaya = parseInt(totalBiayaElement.replace(/[^0-9]/g, '')) || 0;
+            const dpElement = document.getElementById(`dp-${jenis}`).textContent;
+            let dp = parseInt(dpElement.replace(/[^0-9]/g, '')) || 0;
+            
+            const paymentMethodElement = document.querySelector(`#reservasi-${jenis}-form .payment-option.selected`);
+            const paymentMethod = paymentMethodElement ? paymentMethodElement.id.replace(`payment-`, '').replace(`-${jenis}`, '') : 'lokasi';
+
+            let status = 'pending';
+            if (paymentMethod === 'sekarang') {
+                status = 'dibayar';
+            } else if (paymentMethod === 'lokasi') {
+                dp = 0;
+                status = 'aktif';
+            }
+
+            // Get selected akomodasi
+            const akomodasiTerpilih = dataApp.akomodasiLainnya
+                .filter(a => a.status === 'dipilih' && a.jumlah > 0)
+                .map(a => ({
+                    id: a.id,
+                    nama: a.nama,
+                    harga: a.harga,
+                    satuan: a.satuan,
+                    jumlah: a.jumlah,
+                    totalBiaya: (a.harga || 0) * (a.jumlah || 0)
+                }));
+
+            const newInvoice = {
+                invoice: generateInvoiceCode(),
+                tanggalReservasi: formatDate(new Date()),
+                jenis: jenis,
+                nama: nama,
+                telepon: telepon,
+                email: email || '',
+                tanggalCheckin: tanggalCheckin,
+                tanggalCheckout: tanggalCheckout,
+                jumlahMalam: jumlahMalam,
+                jumlahOrang: jumlahOrang,
+                lapak: isTenda ? selectedItems.map(item => item.kode) : [],
+                glamping: isTenda ? [] : selectedItems.map(item => item.kode),
+                lapakDetail: isTenda ? selectedItems.map(item => ({ kode: item.kode, harga: item.harga })) : [],
+                glampingDetail: isTenda ? [] : selectedItems.map(item => ({ kode: item.kode, nama: item.nama, harga: item.harga, kapasitas: item.kapasitas })),
+                akomodasiLainnya: akomodasiTerpilih,
+                totalBiaya: totalBiaya,
+                dp: dp,
+                sisaPembayaran: totalBiaya - dp,
+                status: status,
+                paymentMethod: paymentMethod,
+                barangSewa: [],
+                tanggalSelesai: null,
+                namaPemandu: '',
+                diskonTipe: 'none',
+                diskonNilai: 0,
+                diskonAmount: 0,
+                catatan: ''
+            };
+            
+            const newReservasi = {
+                invoice: newInvoice.invoice,
+                jenis: jenis,
+                tanggalReservasi: newInvoice.tanggalReservasi,
+                tanggalCheckin: tanggalCheckin,
+                tanggalCheckout: tanggalCheckout,
+                jumlahOrang: jumlahOrang,
+                lapak: newInvoice.lapak,
+                glamping: newInvoice.glamping,
+                status: status,
+            };
+
+            // Reset selected items status
+            selectedItems.forEach(item => {
+                item.status = 'tersedia';
+            });
+            
+            // Reset akomodasi selection
+            dataApp.akomodasiLainnya.forEach(akomodasi => {
+                akomodasi.status = 'tersedia';
+                akomodasi.jumlah = 0;
+            });
+            
+            dataApp.reservasi.push(newReservasi);
+            dataApp.invoice.push(newInvoice);
+            saveToLocalStorage();
+
+            form.reset();
+            
+            // Reset to default dates
+            const today = formatDate(new Date());
+            const nextDay = formatDate(new Date(new Date().getTime() + 24 * 60 * 60 * 1000));
+            
+            document.getElementById(`tanggal-checkin-${jenis}`).value = today;
+            document.getElementById(`tanggal-checkout-${jenis}`).value = nextDay;
+            document.getElementById(`jumlah-malam-${jenis}`).value = dataApp.pengaturan.minReservasiHari;
+            
+            if (isTenda) {
+                updateLapakStatus();
+                generateAkomodasiOptions('tenda');
+            } else {
+                updateGlampingStatus();
+                generateAkomodasiOptions('glamping');
+            }
+            
+            updateDashboard();
+            generateInvoiceList();
+
+            alert(`Reservasi ${newInvoice.invoice} berhasil dibuat! Status: ${newInvoice.status.toUpperCase()}. Total Biaya: ${formatRupiah(totalBiaya)}.`);
+            
+            showInvoiceModal(newInvoice.invoice);
+        }
+
+        // --- Invoice Section ---
+        
+        function generateInvoiceList() {
+            const tbody = document.getElementById('invoice-list');
+            tbody.innerHTML = '';
+            
+            const filterKeyword = document.getElementById('cari-invoice').value.toLowerCase();
+            const filterStatus = document.getElementById('filter-status').value;
+            const filterJenis = document.getElementById('filter-jenis').value;
+
+            const filteredInvoices = dataApp.invoice.filter(invoice => {
+                const keywordMatch = invoice.invoice.toLowerCase().includes(filterKeyword) ||
+                                     (invoice.nama && invoice.nama.toLowerCase().includes(filterKeyword)) ||
+                                     (invoice.telepon && invoice.telepon.includes(filterKeyword));
+                
+                const statusMatch = filterStatus === '' || invoice.status === filterStatus;
+                
+                const jenisMatch = filterJenis === '' || invoice.jenis === filterJenis;
+
+                return keywordMatch && statusMatch && jenisMatch;
+            });
+
+            filteredInvoices.sort((a, b) => new Date(b.tanggalReservasi) - new Date(a.tanggalReservasi));
+
+            filteredInvoices.forEach(invoice => {
+                let statusBadge;
+                if (invoice.status === 'pending') statusBadge = '<span class="badge badge-warning">Pending (DP)</span>';
+                else if (invoice.status === 'dibayar') statusBadge = '<span class="badge badge-primary">Dibayar (DP/Lunas)</span>';
+                else if (invoice.status === 'aktif') statusBadge = '<span class="badge badge-success">Aktif (Check-in)</span>';
+                else if (invoice.status === 'selesai') statusBadge = '<span class="badge badge-secondary">Selesai (Check-out)</span>';
+                else statusBadge = '<span class="badge badge-danger">Dibatalkan</span>';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.invoice}</td>
+                    <td>${invoice.nama || ''}</td>
+                    <td>${invoice.jenis ? invoice.jenis.charAt(0).toUpperCase() + invoice.jenis.slice(1) : ''}</td>
+                    <td>${formatRupiah(invoice.totalBiaya || 0)}</td>
+                    <td>${statusBadge}</td>
+                    <td>${formatDateID(invoice.tanggalReservasi)}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showInvoiceModal('${invoice.invoice}')">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function cariInvoice() {
+            generateInvoiceList();
+        }
+        
+        function showInvoiceModal(invoiceNumber) {
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            if (!invoice) return;
+
+            document.getElementById('modal-invoice-number').textContent = invoiceNumber;
+            const content = document.getElementById('invoice-detail-content');
+            content.innerHTML = generateInvoiceHTML(invoice);
+            
+            // Show/hide buttons based on invoice status
+            document.getElementById('btn-batalkan-invoice').style.display = (invoice.status === 'pending' || invoice.status === 'dibayar') ? 'inline-flex' : 'none';
+            document.getElementById('btn-checkin-invoice').style.display = (invoice.status === 'dibayar' || invoice.status === 'pending') ? 'inline-flex' : 'none';
+            document.getElementById('btn-checkout-invoice').style.display = (invoice.status === 'aktif') ? 'inline-flex' : 'none';
+            document.getElementById('btn-update-pembayaran').style.display = (invoice.status === 'pending' || invoice.status === 'dibayar') ? 'inline-flex' : 'none';
+
+            // Reset edit form
+            document.getElementById('invoice-edit-form').classList.add('hidden');
+            document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
+
+            document.getElementById('invoice-modal').style.display = 'flex';
+        }
+
+        function closeInvoiceModal() {
+            document.getElementById('invoice-modal').style.display = 'none';
+            generateInvoiceList();
+        }
+
+        // FITUR BARU: EDIT INVOICE DENGAN DISKON DAN PEMANDU
+        function toggleEditInvoiceForm() {
+            const editForm = document.getElementById('invoice-edit-form');
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            
+            if (!invoice) return;
+            
+            if (editForm.classList.contains('hidden')) {
+                // Show edit form
+                document.getElementById('edit-nama-pemandu').value = invoice.namaPemandu || '';
+                document.getElementById('edit-diskon-tipe').value = invoice.diskonTipe || 'none';
+                document.getElementById('edit-diskon-nilai').value = invoice.diskonNilai || 0;
+                document.getElementById('edit-catatan').value = invoice.catatan || '';
+                
+                toggleDiskonType();
+                editForm.classList.remove('hidden');
+                document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-times"></i> Tutup Edit';
+            } else {
+                // Hide edit form
+                editForm.classList.add('hidden');
+                document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
+            }
+        }
+
+        function toggleDiskonType() {
+            const diskonTipe = document.getElementById('edit-diskon-tipe').value;
+            const diskonInfo = document.getElementById('diskon-info');
+            
+            if (diskonTipe === 'none') {
+                diskonInfo.classList.add('hidden');
+                document.getElementById('edit-diskon-nilai').value = 0;
+                document.getElementById('edit-diskon-nilai').disabled = true;
+            } else {
+                diskonInfo.classList.remove('hidden');
+                document.getElementById('edit-diskon-nilai').disabled = false;
+                
+                if (diskonTipe === 'percentage') {
+                    diskonInfo.innerHTML = '<i class="fas fa-percentage"></i> Diskon persentase akan diterapkan pada total biaya sebelum DP. Maksimal 100%.';
+                    document.getElementById('edit-diskon-nilai').max = 100;
+                } else {
+                    diskonInfo.innerHTML = '<i class="fas fa-money-bill-wave"></i> Diskon nominal tetap akan dikurangkan dari total biaya sebelum DP.';
+                    document.getElementById('edit-diskon-nilai').max = '';
+                }
+            }
+        }
+
+        function hitungDiskon() {
+            // Akan dihitung saat simpan
+        }
+
+        function simpanEditInvoice() {
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            
+            if (!invoice) return;
+            
+            // Get values from form
+            invoice.namaPemandu = document.getElementById('edit-nama-pemandu').value;
+            invoice.diskonTipe = document.getElementById('edit-diskon-tipe').value;
+            invoice.diskonNilai = parseFloat(document.getElementById('edit-diskon-nilai').value) || 0;
+            invoice.catatan = document.getElementById('edit-catatan').value;
+            
+            // Calculate discount
+            let diskonAmount = 0;
+            let totalBiayaSebelumDiskon = invoice.totalBiaya || 0;
+            
+            // Kurangi biaya sewa barang untuk perhitungan diskon (jika ada)
+            let totalBiayaSewaBarang = 0;
+            if (invoice.barangSewa && invoice.barangSewa.length > 0) {
+                invoice.barangSewa.forEach(sewa => {
+                    totalBiayaSewaBarang += sewa.totalBiaya || 0;
+                });
+            }
+            
+            totalBiayaSebelumDiskon -= totalBiayaSewaBarang;
+            
+            if (invoice.diskonTipe === 'percentage' && invoice.diskonNilai > 0) {
+                diskonAmount = totalBiayaSebelumDiskon * (invoice.diskonNilai / 100);
+            } else if (invoice.diskonTipe === 'fixed' && invoice.diskonNilai > 0) {
+                diskonAmount = invoice.diskonNilai;
+            }
+            
+            // Ensure discount doesn't exceed total
+            if (diskonAmount > totalBiayaSebelumDiskon) {
+                diskonAmount = totalBiayaSebelumDiskon;
+            }
+            
+            invoice.diskonAmount = diskonAmount;
+            
+            // Recalculate total with discount
+            invoice.totalBiaya = totalBiayaSebelumDiskon - diskonAmount + totalBiayaSewaBarang;
+            
+            // Recalculate DP if payment method is transfer
+            if (invoice.paymentMethod === 'transfer') {
+                const dpPercentage = dataApp.pengaturan.dpPercentage;
+                invoice.dp = invoice.totalBiaya * (dpPercentage / 100);
+                invoice.sisaPembayaran = invoice.totalBiaya - invoice.dp;
+            } else if (invoice.paymentMethod === 'sekarang') {
+                invoice.dp = invoice.totalBiaya;
+                invoice.sisaPembayaran = 0;
+            } else if (invoice.paymentMethod === 'lokasi') {
+                invoice.dp = 0;
+                invoice.sisaPembayaran = invoice.totalBiaya;
+            }
+            
+            saveToLocalStorage();
+            
+            // Update invoice display
+            const content = document.getElementById('invoice-detail-content');
+            content.innerHTML = generateInvoiceHTML(invoice);
+            
+            // Hide edit form
+            document.getElementById('invoice-edit-form').classList.add('hidden');
+            document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
+            
+            alert('Perubahan invoice berhasil disimpan!');
+        }
+
+        function batalEditInvoice() {
+            document.getElementById('invoice-edit-form').classList.add('hidden');
+            document.getElementById('btn-edit-invoice').innerHTML = '<i class="fas fa-edit"></i> Edit Invoice';
+        }
+
+        function generateInvoiceHTML(invoice) {
+            const perusahaan = dataApp.pengaturan.perusahaan;
+            
+            let statusBadge;
+            if (invoice.status === 'pending') statusBadge = '<span class="badge badge-warning">Pending (DP)</span>';
+            else if (invoice.status === 'dibayar') statusBadge = '<span class="badge badge-primary">Dibayar (DP/Lunas)</span>';
+            else if (invoice.status === 'aktif') statusBadge = '<span class="badge badge-success">Aktif (Check-in)</span>';
+            else if (invoice.status === 'selesai') statusBadge = '<span class="badge badge-secondary">Selesai (Check-out)</span>';
+            else statusBadge = '<span class="badge badge-danger">Dibatalkan</span>';
+
+            const paymentMethodText = invoice.paymentMethod === 'transfer' ? 'Transfer Bank' : invoice.paymentMethod === 'lokasi' ? 'Bayar di Lokasi (Check-in)' : 'Bayar Penuh Sekarang (Transfer)';
+
+            let itemsHTML = '';
+            let totalBiayaSebelumDiskon = 0;
+            let totalBiayaSewaBarang = 0;
+            
+            if (invoice.jenis === 'tenda') {
+                const lapakCodes = invoice.lapak || [];
+                const lapakPrice = invoice.lapakDetail && invoice.lapakDetail[0] ? invoice.lapakDetail[0].harga : (dataApp.lapakTenda.find(l => l.kode === (lapakCodes[0] || ''))?.harga || 0);
+                const totalBiayaLapak = lapakCodes.length * lapakPrice * (invoice.jumlahMalam || 0);
+                itemsHTML += `
+                    <tr>
+                        <td>Lapak Tenda (${lapakCodes.join(', ')})</td>
+                        <td>${invoice.jumlahMalam || 0} malam</td>
+                        <td>${formatRupiah(lapakPrice)}/lapak/malam</td>
+                        <td>${formatRupiah(totalBiayaLapak)}</td>
+                    </tr>
+                `;
+                totalBiayaSebelumDiskon += totalBiayaLapak;
+            } else {
+                const glampingDetails = invoice.glampingDetail || [];
+                glampingDetails.forEach(glamping => {
+                    const totalBiayaGlamping = (glamping.harga || 0) * (invoice.jumlahMalam || 0);
+                    itemsHTML += `
+                        <tr>
+                            <td>Glamping ${glamping.kode || ''} (${glamping.nama || ''})</td>
+                            <td>${invoice.jumlahMalam || 0} malam</td>
+                            <td>${formatRupiah(glamping.harga || 0)}/unit/malam</td>
+                            <td>${formatRupiah(totalBiayaGlamping)}</td>
+                        </tr>
+                    `;
+                    totalBiayaSebelumDiskon += totalBiayaGlamping;
+                });
+            }
+            
+            const totalBiayaTiket = (invoice.jumlahOrang || 0) * (invoice.jumlahMalam || 0) * perusahaan.hargaTiket;
+            itemsHTML += `
+                <tr>
+                    <td>Tiket Masuk (${invoice.jumlahOrang || 0} orang)</td>
+                    <td>${invoice.jumlahMalam || 0} malam</td>
+                    <td>${formatRupiah(perusahaan.hargaTiket)}/orang/malam</td>
+                    <td>${formatRupiah(totalBiayaTiket)}</td>
+                </tr>
+            `;
+            totalBiayaSebelumDiskon += totalBiayaTiket;
+
+            // Add akomodasi lainnya
+            if (invoice.akomodasiLainnya && invoice.akomodasiLainnya.length > 0) {
+                invoice.akomodasiLainnya.forEach(akomodasi => {
+                    itemsHTML += `
+                        <tr>
+                            <td>${akomodasi.nama || ''}</td>
+                            <td>${akomodasi.jumlah || 0} ${akomodasi.satuan || ''}</td>
+                            <td>${formatRupiah(akomodasi.harga || 0)}/${akomodasi.satuan || ''}</td>
+                            <td>${formatRupiah(akomodasi.totalBiaya || 0)}</td>
+                        </tr>
+                    `;
+                    totalBiayaSebelumDiskon += akomodasi.totalBiaya || 0;
+                });
+            }
+
+            if (invoice.barangSewa && invoice.barangSewa.length > 0) {
+                invoice.barangSewa.forEach(sewa => {
+                    itemsHTML += `
+                        <tr>
+                            <td>Sewa ${sewa.nama || ''}</td>
+                            <td>${sewa.jumlah || 0} ${sewa.satuan || ''} x ${sewa.jumlahHari || 0} hari</td>
+                            <td>${formatRupiah(sewa.harga || 0)}/${sewa.satuan || ''}/hari</td>
+                            <td>${formatRupiah(sewa.totalBiaya || 0)}</td>
+                        </tr>
+                    `;
+                    totalBiayaSewaBarang += sewa.totalBiaya || 0;
+                });
+            }
+
+            const bankInfoHTML = invoice.paymentMethod === 'transfer' || invoice.paymentMethod === 'sekarang' ? `
+                <div class="bank-info mt-3">
+                    <h5>Informasi Pembayaran Transfer Bank</h5>
+                    <p><strong>Bank:</strong> ${perusahaan.namaBank}</p>
+                    <p><strong>No. Rek:</strong> ${perusahaan.norek}</p>
+                    <p><strong>A/N:</strong> ${perusahaan.anRekening}</p>
+                </div>
+            ` : '';
+
+            const sisaPembayaran = (invoice.totalBiaya || 0) - (invoice.paymentMethod === 'transfer' ? (invoice.dp || 0) : (invoice.paymentMethod === 'lokasi' ? 0 : (invoice.totalBiaya || 0)));
+
+            // Diskon HTML
+            let diskonHTML = '';
+            if (invoice.diskonTipe && invoice.diskonTipe !== 'none' && invoice.diskonAmount > 0) {
+                const diskonLabel = invoice.diskonTipe === 'percentage' ? 
+                    `Diskon (${invoice.diskonNilai}%)` : `Diskon (Rp)`;
+                    
+                diskonHTML = `
+                    <tr style="background-color: #e8f5e9;">
+                        <td colspan="3" class="text-right">**${diskonLabel}**</td>
+                        <td class="text-right">**-${formatRupiah(invoice.diskonAmount)}**</td>
+                    </tr>
+                `;
+            }
+
+            const sisaBayarRow = sisaPembayaran > 0 ? `
+                <tr style="background-color: #ffe0b2;">
+                    <td colspan="3" class="text-right">**Sisa Pembayaran (Wajib Lunas saat Check-in)**</td>
+                    <td class="text-right">**<span id="modal-sisa-bayar">${formatRupiah(sisaPembayaran)}</span>**</td>
+                </tr>
+            ` : '';
+            
+            const dpRow = invoice.paymentMethod === 'transfer' ? `
+                <tr style="background-color: #e0f7fa;">
+                    <td colspan="3" class="text-right">**Uang Muka (DP ${dataApp.pengaturan.dpPercentage}%)**</td>
+                    <td class="text-right">**${formatRupiah(invoice.dp || 0)}**</td>
+                </tr>
+            ` : '';
+
+            let extraInfoHTML = '';
+            
+            // Add nama pemandu jika ada
+            if (invoice.namaPemandu) {
+                extraInfoHTML += `
+                    <div class="alert alert-secondary mt-2">
+                        <strong><i class="fas fa-user-tie"></i> Pemandu:</strong> ${invoice.namaPemandu}
+                    </div>
+                `;
+            }
+            
+            // Add catatan jika ada
+            if (invoice.catatan) {
+                extraInfoHTML += `
+                    <div class="alert alert-info mt-3">
+                        <strong><i class="fas fa-sticky-note"></i> Catatan:</strong><br>
+                        ${invoice.catatan}
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="invoice">
+                    <div class="invoice-header">
+                        <h2 style="color: var(--primary-color); font-size: 1.2rem;">${perusahaan.nama}</h2>
+                        <p style="font-size: 0.85rem;">Sistem Reservasi Kemah Keluarga</p>
+                    </div>
+                    
+                    <div class="invoice-details mb-3">
+                        <div class="form-row">
+                            <div class="form-group" style="flex: 1;">
+                                <p><strong>Tgl. Reservasi:</strong> ${formatDateID(invoice.tanggalReservasi)}</p>
+                                <p><strong>Check-in:</strong> ${formatDateID(invoice.tanggalCheckin)} (${dataApp.pengaturan.jamCheckin})</p>
+                                <p><strong>Check-out:</strong> ${formatDateID(invoice.tanggalCheckout)} (${dataApp.pengaturan.jamCheckout})</p>
+                                <p><strong>Jumlah Malam:</strong> ${invoice.jumlahMalam || 0} malam</p>
+                            </div>
+                            <div class="form-group" style="flex: 1;">
+                                <p><strong>Nama Pemesan:</strong> ${invoice.nama || ''}</p>
+                                <p><strong>Telepon:</strong> ${invoice.telepon || ''}</p>
+                                <p><strong>Email:</strong> ${invoice.email || '-'}</p>
+                                <p><strong>Jenis:</strong> ${invoice.jenis ? invoice.jenis.charAt(0).toUpperCase() + invoice.jenis.slice(1) : ''}</p>
+                            </div>
+                        </div>
+                        <p><strong>Status:</strong> ${statusBadge}</p>
+                        <p><strong>Metode Bayar:</strong> ${paymentMethodText}</p>
+                    </div>
+
+                    <div class="table-responsive invoice-items">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Deskripsi</th>
+                                    <th>Durasi/Unit</th>
+                                    <th>Harga Satuan</th>
+                                    <th class="text-right">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${itemsHTML}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-right">**TOTAL BIAYA AKOMODASI & TIKET**</td>
+                                    <td class="text-right">**${formatRupiah(totalBiayaSebelumDiskon)}**</td>
+                                </tr>
+                                ${diskonHTML}
+                                ${dpRow}
+                                ${sisaBayarRow}
+                            </tfoot>
+                        </table>
+                    </div>
+                    
+                    ${extraInfoHTML}
+                    
+                    ${bankInfoHTML}
+
+                    <div class="text-center mt-3" style="font-size: 0.8rem; color: var(--gray-color);">
+                        <p>Terima kasih atas reservasi Anda.</p>
+                        <p>Hubungi ${perusahaan.noLayanan} untuk bantuan.</p>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function updatePembayaran() {
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            const reservasi = dataApp.reservasi.find(r => r.invoice === invoiceNumber);
+            
+            if (!invoice || !reservasi) return;
+
+            const newStatus = invoice.totalBiaya === 0 || invoice.paymentMethod === 'sekarang' ? 'dibayar' : (invoice.paymentMethod === 'transfer' ? 'dibayar' : 'aktif');
+            const paymentType = newStatus === 'dibayar' ? 'DP/Lunas' : 'Bayar di Lokasi';
+
+            if (confirm(`Update status pembayaran Invoice ${invoiceNumber} menjadi DIBAYAR (${paymentType})?`)) {
+                invoice.status = 'dibayar';
+                reservasi.status = 'dibayar';
+                
+                if (invoice.sisaPembayaran <= 0) {
+                    invoice.sisaPembayaran = 0;
+                    invoice.dp = invoice.totalBiaya;
+                    
+                    if (invoice.paymentMethod === 'lokasi') {
+                        invoice.status = 'aktif';
+                        reservasi.status = 'aktif';
+                        invoice.tanggalSelesai = formatDate(new Date());
+                    } else if (invoice.paymentMethod === 'sekarang') {
+                        invoice.tanggalSelesai = formatDate(new Date());
+                    }
+                }
+
+                saveToLocalStorage();
+                showInvoiceModal(invoiceNumber);
+                generateInvoiceList();
+                updateLapakVisualization();
+                updateDashboard();
+                alert(`Pembayaran Invoice ${invoiceNumber} berhasil di-update. Status: ${invoice.status.toUpperCase()}`);
+            }
+        }
+
+        function batalkanReservasi() {
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            const reservasi = dataApp.reservasi.find(r => r.invoice === invoiceNumber);
+            
+            if (!invoice || !reservasi) return;
+
+            if (confirm(`Apakah Anda yakin ingin MEMBATALKAN reservasi ${invoiceNumber}? Tindakan ini akan membatalkan lapak/glamping.`)) {
+                invoice.status = 'dibatalkan';
+                reservasi.status = 'dibatalkan';
+                
+                const allCodes = [...(invoice.lapak || []), ...(invoice.glamping || [])];
+                allCodes.forEach(code => {
+                    let item = dataApp.lapakTenda.find(l => l.kode === code);
+                    if (!item) item = dataApp.glamping.find(g => g.kode === code);
+                    
+                    if (item) {
+                        item.status = 'tersedia';
+                    }
+                });
+
+                saveToLocalStorage();
+                closeInvoiceModal();
+                updateLapakVisualization();
+                updateDashboard();
+                alert(`Reservasi ${invoiceNumber} berhasil DIBATALKAN.`);
+            }
+        }
+        
+        function checkInReservasi() {
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            const reservasi = dataApp.reservasi.find(r => r.invoice === invoiceNumber);
+            
+            if (!invoice || !reservasi) return;
+            
+            if (invoice.sisaPembayaran > 0) {
+                alert(`Sisa pembayaran sebesar ${formatRupiah(invoice.sisaPembayaran)} harus dilunasi sebelum Check-in.`);
+                return;
+            }
+            
+            if (confirm(`Konfirmasi Check-in untuk reservasi ${invoiceNumber} pada tanggal ${formatDateID(invoice.tanggalCheckin)}?`)) {
+                invoice.status = 'aktif';
+                reservasi.status = 'aktif';
+
+                saveToLocalStorage();
+                closeInvoiceModal();
+                updateLapakVisualization();
+                updateDashboard();
+                alert(`Reservasi ${invoiceNumber} berhasil Check-in. Selamat Menikmati!`);
+            }
+        }
+
+        function checkOutReservasi() {
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            const reservasi = dataApp.reservasi.find(r => r.invoice === invoiceNumber);
+            
+            if (!invoice || !reservasi) return;
+            
+            const checkoutTime = new Date(invoice.tanggalCheckout + 'T' + dataApp.pengaturan.jamCheckout);
+            const now = new Date();
+            let denda = 0;
+            
+            if (now > checkoutTime) {
+                const diffTime = Math.abs(now - checkoutTime);
+                const diffHours = Math.ceil(diffTime / (1000 * 60 * 60));
+                denda = diffHours * dataApp.pengaturan.dendaKeterlambatan;
+            }
+
+            if (confirm(`Konfirmasi Check-out untuk reservasi ${invoiceNumber}? Denda keterlambatan: ${formatRupiah(denda)}.`)) {
+                invoice.status = 'selesai';
+                reservasi.status = 'selesai';
+                invoice.tanggalSelesai = formatDate(new Date());
+
+                if (denda > 0) {
+                    alert(`Total denda keterlambatan: ${formatRupiah(denda)}`);
+                }
+
+                const allCodes = [...(invoice.lapak || []), ...(invoice.glamping || [])];
+                allCodes.forEach(code => {
+                    let item = dataApp.lapakTenda.find(l => l.kode === code);
+                    if (!item) item = dataApp.glamping.find(g => g.kode === code);
+                    
+                    if (item) {
+                        item.status = 'tersedia';
+                    }
+                });
+
+                saveToLocalStorage();
+                closeInvoiceModal();
+                updateLapakVisualization();
+                updateDashboard();
+                alert(`Reservasi ${invoiceNumber} berhasil Check-out dan Selesai.`);
+            }
+        }
+
+        function printInvoiceToPDF() {
+            const invoiceNumber = document.getElementById('modal-invoice-number').textContent;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            if (!invoice) return;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const perusahaan = dataApp.pengaturan.perusahaan;
+
+            let finalY = 0;
+
+            doc.setFontSize(16);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`INVOICE: ${invoiceNumber}`, 10, 10);
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'normal');
+            doc.text(perusahaan.nama, 10, 16);
+            doc.text(perusahaan.alamat, 10, 21);
+
+            doc.setFontSize(10);
+            doc.text(`Tgl. Reservasi: ${formatDateID(invoice.tanggalReservasi)}`, 100, 30);
+            doc.text(`Nama Pemesan: ${invoice.nama || ''}`, 10, 30);
+            doc.text(`Telepon: ${invoice.telepon || ''}`, 10, 36);
+            doc.text(`Jenis: ${invoice.jenis ? invoice.jenis.charAt(0).toUpperCase() + invoice.jenis.slice(1) : ''}`, 10, 42);
+            doc.text(`Status: ${invoice.status ? invoice.status.toUpperCase() : ''}`, 10, 48);
+
+            doc.text(`Check-in: ${formatDateID(invoice.tanggalCheckin)}`, 100, 36);
+            doc.text(`Check-out: ${formatDateID(invoice.tanggalCheckout)}`, 100, 42);
+            doc.text(`Jumlah Malam: ${invoice.jumlahMalam || 0} malam`, 100, 48);
+            doc.text(`Jumlah Orang: ${invoice.jumlahOrang || 0} orang`, 100, 54);
+
+            const tableData = [];
+            let totalAkomodasiTiket = 0;
+            let totalBiayaSewaBarang = 0;
+
+            if (invoice.jenis === 'tenda') {
+                const lapakCodes = invoice.lapak || [];
+                const lapakPrice = invoice.lapakDetail && invoice.lapakDetail[0] ? invoice.lapakDetail[0].harga : dataApp.lapakTenda.find(l => l.kode === (lapakCodes[0] || ''))?.harga || 0;
+                const totalBiayaLapak = lapakCodes.length * lapakPrice * (invoice.jumlahMalam || 0);
+                
+                tableData.push([
+                    `Lapak Tenda (${lapakCodes.join(', ')})`,
+                    `${invoice.jumlahMalam || 0} malam`,
+                    `${formatRupiah(lapakPrice)}/lapak/malam`,
+                    formatRupiah(totalBiayaLapak)
+                ]);
+                totalAkomodasiTiket += totalBiayaLapak;
+            } else {
+                const glampingCodes = Array.isArray(invoice.glamping) ? invoice.glamping : [invoice.glamping];
+                glampingCodes.forEach(kodeGlamping => {
+                    const glamping = invoice.glampingDetail ? invoice.glampingDetail.find(g => g.kode === kodeGlamping) : dataApp.glamping.find(g => g.kode === kodeGlamping);
+                    if (glamping) {
+                        const totalGlamping = (glamping.harga || 0) * (invoice.jumlahMalam || 0);
+                        tableData.push([
+                            `Glamping ${glamping.kode || ''} (${glamping.nama || ''})`,
+                            `${invoice.jumlahMalam || 0} malam`,
+                            `${formatRupiah(glamping.harga || 0)}/unit/malam`,
+                            formatRupiah(totalGlamping)
+                        ]);
+                        totalAkomodasiTiket += totalGlamping;
+                    }
+                });
+            }
+            
+            tableData.push([
+                `Tiket Masuk (${invoice.jumlahOrang || 0} orang)`,
+                `${invoice.jumlahMalam || 0} malam`,
+                `${formatRupiah(perusahaan.hargaTiket)}/orang/malam`,
+                formatRupiah((invoice.jumlahOrang || 0) * (invoice.jumlahMalam || 0) * perusahaan.hargaTiket)
+            ]);
+            totalAkomodasiTiket += (invoice.jumlahOrang || 0) * (invoice.jumlahMalam || 0) * perusahaan.hargaTiket;
+
+            // Add akomodasi lainnya
+            if (invoice.akomodasiLainnya && invoice.akomodasiLainnya.length > 0) {
+                invoice.akomodasiLainnya.forEach(akomodasi => {
+                    tableData.push([
+                        `${akomodasi.nama || ''}`,
+                        `${akomodasi.jumlah || 0} ${akomodasi.satuan || ''}`,
+                        `${formatRupiah(akomodasi.harga || 0)}/${akomodasi.satuan || ''}`,
+                        formatRupiah(akomodasi.totalBiaya || 0)
+                    ]);
+                    totalAkomodasiTiket += akomodasi.totalBiaya || 0;
+                });
+            }
+
+            if (invoice.barangSewa && invoice.barangSewa.length > 0) {
+                invoice.barangSewa.forEach(sewa => {
+                    tableData.push([
+                        `Sewa ${sewa.nama || ''}`,
+                        `${sewa.jumlah || 0} ${sewa.satuan || ''} x ${sewa.jumlahHari || 0} hari`,
+                        `${formatRupiah(sewa.harga || 0)}/${sewa.satuan || ''}/hari`,
+                        formatRupiah(sewa.totalBiaya || 0)
+                    ]);
+                    totalBiayaSewaBarang += sewa.totalBiaya || 0;
+                });
+            }
+
+            const finalTableData = [
+                ...tableData,
+                [{ content: "TOTAL BIAYA AKOMODASI & TIKET", colSpan: 3, styles: { halign: 'right', fontStyle: 'bold' } }, { content: formatRupiah(totalAkomodasiTiket), styles: { fontStyle: 'bold' } }],
+            ];
+            
+            // Add discount if exists
+            if (invoice.diskonTipe && invoice.diskonTipe !== 'none' && invoice.diskonAmount > 0) {
+                const diskonLabel = invoice.diskonTipe === 'percentage' ? 
+                    `Diskon (${invoice.diskonNilai}%)` : `Diskon`;
+                    
+                finalTableData.push(
+                    [{ content: diskonLabel, colSpan: 3, styles: { halign: 'right', fontStyle: 'bold', fillColor: [232, 245, 233] } }, 
+                     { content: `-${formatRupiah(invoice.diskonAmount)}`, styles: { fontStyle: 'bold', fillColor: [232, 245, 233] } }],
+                );
+            }
+            
+            if (totalBiayaSewaBarang > 0) {
+                finalTableData.push(
+                    [{ content: "TOTAL SEWA BARANG", colSpan: 3, styles: { halign: 'right', fontStyle: 'bold' } }, { content: formatRupiah(totalBiayaSewaBarang), styles: { fontStyle: 'bold' } }],
+                );
+            }
+            
+            finalTableData.push(
+                [{ content: "TOTAL KESELURUHAN", colSpan: 3, styles: { halign: 'right', fontStyle: 'bold', fillColor: [224, 242, 241] } }, { content: formatRupiah(invoice.totalBiaya || 0), styles: { fontStyle: 'bold', fillColor: [224, 242, 241] } }],
+            );
+
+            if (invoice.paymentMethod === 'transfer') {
+                finalTableData.push(
+                    [{ content: `DP (${dataApp.pengaturan.dpPercentage}%)`, colSpan: 3, styles: { halign: 'right', fontStyle: 'bold', fillColor: [232, 245, 233] } }, { content: formatRupiah(invoice.dp || 0), styles: { fontStyle: 'bold', fillColor: [232, 245, 233] } }],
+                );
+                finalTableData.push(
+                    [{ content: "SISA PEMBAYARAN", colSpan: 3, styles: { halign: 'right', fontStyle: 'bold', fillColor: [255, 243, 224] } }, { content: formatRupiah(invoice.sisaPembayaran || 0), styles: { fontStyle: 'bold', fillColor: [255, 243, 224] } }],
+                );
+            }
+
+            doc.autoTable({
+                startY: 60,
+                head: [['Deskripsi', 'Durasi/Unit', 'Harga Satuan', 'Subtotal']],
+                body: finalTableData,
+                theme: 'striped',
+                headStyles: { fillColor: [46, 125, 50], textColor: [255, 255, 255] },
+                didDrawPage: function (data) {
+                    finalY = data.cursor.y;
+                }
+            });
+
+            // Add guide name if exists
+            if (invoice.namaPemandu) {
+                let guideY = finalY + 10;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text("PEMANDU/PETUGAS:", 10, guideY);
+                doc.setFont('helvetica', 'normal');
+                doc.text(invoice.namaPemandu, 50, guideY);
+                finalY = guideY;
+            }
+
+            if (invoice.paymentMethod === 'transfer' || invoice.paymentMethod === 'sekarang') {
+                let paymentY = finalY + 10;
+                doc.setFontSize(10);
+                doc.setFont('helvetica', 'bold');
+                doc.text("INFORMASI PEMBAYARAN TRANSFER BANK", 10, paymentY);
+                paymentY += 5;
+                doc.setFont('helvetica', 'normal');
+                doc.text(`Bank: ${perusahaan.namaBank}`, 10, paymentY);
+                paymentY += 5;
+                doc.text(`No. Rek: ${perusahaan.norek}`, 10, paymentY);
+                paymentY += 5;
+                doc.text(`A/N: ${perusahaan.anRekening}`, 10, paymentY);
+                finalY = paymentY;
+            }
+
+            // Add notes if exists
+            if (invoice.catatan) {
+                let notesY = finalY + 10;
+                doc.setFontSize(9);
+                doc.setFont('helvetica', 'bold');
+                doc.text("CATATAN:", 10, notesY);
+                doc.setFont('helvetica', 'normal');
+                const splitNotes = doc.splitTextToSize(invoice.catatan, 180);
+                doc.text(splitNotes, 10, notesY + 5);
+                finalY = notesY + 5 + (splitNotes.length * 5);
+            }
+
+            let catatanY = finalY + 10;
+            doc.setFontSize(9);
+            doc.setFont('helvetica', 'normal');
+            doc.text("Catatan:", 10, catatanY);
+            catatanY += 5;
+            doc.text(`1. Check-in: ${dataApp.pengaturan.jamCheckin} | Check-out: ${dataApp.pengaturan.jamCheckout}`, 10, catatanY);
+            catatanY += 5;
+            doc.text(`2. Denda keterlambatan check-out: ${formatRupiah(dataApp.pengaturan.dendaKeterlambatan)}/jam.`, 10, catatanY);
+            catatanY += 5;
+            doc.text(`3. Hubungi ${perusahaan.noLayanan} untuk bantuan.`, 10, catatanY);
+
+            let penutupY = catatanY + 10;
+            doc.setFontSize(10);
+            doc.setFont('helvetica', 'italic');
+            doc.text("Terima kasih atas reservasi Anda.", 105, penutupY, null, null, 'center');
+
+            doc.save(`Invoice-${invoiceNumber}.pdf`);
+        }
+
+        // --- Lapak Visualisasi Section ---
+
+        function updateLapakVisualization() {
+            const tanggalVis = document.getElementById('tanggal-visualisasi').value || formatDate(new Date());
+            const containerLapak = document.getElementById('visualization-lapak');
+            const containerGlamping = document.getElementById('visualization-glamping');
+            containerLapak.innerHTML = '';
+            containerGlamping.innerHTML = '';
+
+            const reservedLapak = getReservedCodes('tenda', tanggalVis);
+            const reservedGlamping = getReservedCodes('glamping', tanggalVis);
+
+            dataApp.lapakTenda.forEach(lapak => {
+                const isReserved = reservedLapak.includes(lapak.kode);
+                const item = document.createElement('div');
+                item.classList.add('grid-item', isReserved ? 'lapak-terpakai' : 'lapak-tersedia');
+                item.textContent = lapak.kode.replace('L', '');
+                containerLapak.appendChild(item);
+            });
+
+            dataApp.glamping.forEach(glamping => {
+                const isReserved = reservedGlamping.includes(glamping.kode);
+                const item = document.createElement('div');
+                item.classList.add('grid-item', isReserved ? 'lapak-terpakai' : 'lapak-tersedia');
+                item.textContent = glamping.kode;
+                containerGlamping.appendChild(item);
+            });
+            
+            const reservasiList = document.getElementById('lapak-reservasi-list');
+            reservasiList.innerHTML = '';
+            
+            dataApp.reservasi.filter(r => r.status === 'aktif' || r.status === 'dibayar').forEach(r => {
+                const invoice = dataApp.invoice.find(inv => inv.invoice === r.invoice);
+                if (!invoice) return;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${r.invoice}</td>
+                    <td>${r.jenis.charAt(0).toUpperCase() + r.jenis.slice(1)}</td>
+                    <td>${formatDateID(r.tanggalCheckin)}</td>
+                    <td>${formatDateID(r.tanggalCheckout)}</td>
+                    <td>${invoice.nama || ''}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="showInvoiceModal('${r.invoice}')">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                    </td>
+                `;
+                reservasiList.appendChild(row);
+            });
+        }
+
+        function changeVisualizationTab(tabElement, target) {
+            document.querySelectorAll('#lapak-section .tabs .tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#lapak-section .tab-content').forEach(content => content.classList.remove('active'));
+            tabElement.classList.add('active');
+            document.getElementById(target).classList.add('active');
+        }
+
+        // --- Sewa Barang Manual di Invoice Section ---
+        
+        function loadInvoiceOptions() {
+            const select = document.getElementById('invoice-sewa-barang');
+            select.innerHTML = '<option value="">-- Pilih Invoice --</option>';
+            
+            dataApp.invoice.filter(inv => inv.status === 'pending' || inv.status === 'dibayar' || inv.status === 'aktif')
+                .forEach(inv => {
+                    const option = document.createElement('option');
+                    option.value = inv.invoice;
+                    option.textContent = `${inv.invoice} - ${inv.nama || ''} (${inv.jenis ? inv.jenis.toUpperCase() : ''})`;
+                    select.appendChild(option);
+                });
+            
+            document.getElementById('sewa-barang-form-container').classList.add('hidden');
+        }
+
+        function loadSewaBarangForm() {
+            const invoiceNumber = document.getElementById('invoice-sewa-barang').value;
+            const container = document.getElementById('sewa-barang-form-container');
+            const tbody = document.getElementById('sewa-barang-list-manual');
+            
+            if (!invoiceNumber) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            
+            if (!invoice) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            document.getElementById('jumlah-hari-sewa').value = invoice.jumlahMalam || 1;
+            
+            tbody.innerHTML = '';
+            dataApp.barangSewa.forEach((barang, index) => {
+                const existingItem = (invoice.barangSewa || []).find(b => b.id === barang.id);
+                const currentJumlah = existingItem ? existingItem.jumlah : 0;
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${barang.nama}</td>
+                    <td>${formatRupiah(barang.harga)}</td>
+                    <td>${barang.satuan}</td>
+                    <td>
+                        <input type="number" class="form-control" id="jumlah-barang-invoice-${index}" 
+                            value="${currentJumlah}" min="0" max="${barang.stok}" 
+                            onchange="hitungTotalSewaBarang()" onkeyup="hitungTotalSewaBarang()">
+                    </td>
+                    <td class="text-right"><span id="subtotal-barang-invoice-${index}">${formatRupiah(currentJumlah * (barang.harga || 0) * (invoice.jumlahMalam || 1))}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            container.classList.remove('hidden');
+            hitungTotalSewaBarang();
+        }
+
+        function hitungTotalSewaBarang() {
+            const invoiceNumber = document.getElementById('invoice-sewa-barang').value;
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            if (!invoice) return;
+
+            const jumlahHari = parseInt(document.getElementById('jumlah-hari-sewa').value) || (invoice.jumlahMalam || 1);
+            let total = 0;
+
+            dataApp.barangSewa.forEach((barang, index) => {
+                const jumlah = parseInt(document.getElementById(`jumlah-barang-invoice-${index}`).value) || 0;
+                const subtotal = jumlah * (barang.harga || 0) * jumlahHari;
+                document.getElementById(`subtotal-barang-invoice-${index}`).textContent = formatRupiah(subtotal);
+                total += subtotal;
+            });
+
+            document.getElementById('total-sewa-barang').textContent = formatRupiah(total);
+        }
+        
+        function simpanSewaBarang() {
+            const invoiceNumber = document.getElementById('invoice-sewa-barang').value;
+            if (!invoiceNumber) {
+                alert('Pilih invoice terlebih dahulu.');
+                return;
+            }
+            
+            const invoice = dataApp.invoice.find(inv => inv.invoice === invoiceNumber);
+            const reservasi = dataApp.reservasi.find(r => r.invoice === invoiceNumber);
+            if (!invoice || !reservasi) return;
+
+            const jumlahHari = parseInt(document.getElementById('jumlah-hari-sewa').value) || (invoice.jumlahMalam || 1);
+            const namaPemandu = document.getElementById('nama-pemandu-manual').value || 'Petugas BSA';
+
+            const newBarangSewaList = [];
+            let totalBiayaSewaBarang = 0;
+
+            dataApp.barangSewa.forEach((barang, index) => {
+                const jumlah = parseInt(document.getElementById(`jumlah-barang-invoice-${index}`).value) || 0;
+                if (jumlah > 0) {
+                    const totalBiaya = jumlah * (barang.harga || 0) * jumlahHari;
+                    totalBiayaSewaBarang += totalBiaya;
+                    newBarangSewaList.push({
+                        id: barang.id,
+                        nama: barang.nama,
+                        harga: barang.harga,
+                        satuan: barang.satuan,
+                        stok: barang.stok,
+                        jumlah: jumlah,
+                        jumlahHari: jumlahHari,
+                        totalBiaya: totalBiaya,
+                        petugas: namaPemandu
+                    });
+                }
+            });
+
+            let totalBiayaAkomodasi = 0;
+            const perusahaan = dataApp.pengaturan.perusahaan;
+
+            if (invoice.jenis === 'tenda') {
+                const lapakCodes = invoice.lapak || [];
+                const lapakPrice = invoice.lapakDetail && invoice.lapakDetail[0] ? invoice.lapakDetail[0].harga : dataApp.lapakTenda.find(l => l.kode === (lapakCodes[0] || ''))?.harga || 0;
+                const totalBiayaLapak = lapakCodes.length * lapakPrice * (invoice.jumlahMalam || 0);
+                totalBiayaAkomodasi += totalBiayaLapak;
+            } else {
+                const glampingDetails = invoice.glampingDetail || [];
+                glampingDetails.forEach(glamping => {
+                    totalBiayaAkomodasi += (glamping.harga || 0) * (invoice.jumlahMalam || 0);
+                });
+            }
+            
+            const totalBiayaTiket = (invoice.jumlahOrang || 0) * (invoice.jumlahMalam || 0) * perusahaan.hargaTiket;
+            totalBiayaAkomodasi += totalBiayaTiket;
+            
+            // Add akomodasi lainnya biaya
+            if (invoice.akomodasiLainnya && invoice.akomodasiLainnya.length > 0) {
+                invoice.akomodasiLainnya.forEach(akomodasi => {
+                    totalBiayaAkomodasi += akomodasi.totalBiaya || 0;
+                });
+            }
+
+            invoice.barangSewa = newBarangSewaList;
+            invoice.totalBiaya = totalBiayaAkomodasi + totalBiayaSewaBarang;
+            
+            const dpPercentage = dataApp.pengaturan.dpPercentage;
+            if (invoice.paymentMethod === 'transfer') {
+                invoice.dp = invoice.totalBiaya * (dpPercentage / 100);
+                invoice.sisaPembayaran = invoice.totalBiaya - invoice.dp;
+            } else if (invoice.paymentMethod === 'lokasi') {
+                invoice.dp = 0;
+                invoice.sisaPembayaran = invoice.totalBiaya;
+            } else if (invoice.paymentMethod === 'sekarang') {
+                invoice.dp = invoice.totalBiaya;
+                invoice.sisaPembayaran = 0;
+            }
+            
+            saveToLocalStorage();
+            
+            document.getElementById('invoice-sewa-barang').value = '';
+            document.getElementById('nama-pemandu-manual').value = '';
+            document.getElementById('sewa-barang-form-container').classList.add('hidden');
+            loadInvoiceOptions();
+            
+            alert(`Sewa barang berhasil ditambahkan ke Invoice ${invoiceNumber}. Total Biaya baru: ${formatRupiah(invoice.totalBiaya)}`);
+
+            if (document.getElementById('modal-invoice-number').textContent === invoiceNumber) {
+                showInvoiceModal(invoiceNumber);
+            }
+        }
+
+        // --- Laporan Section ---
+        
+        function toggleTanggalKustom() {
+            const periode = document.getElementById('periode-laporan').value;
+            const customInputs = document.getElementById('periode-kustom-inputs');
+            if (periode === 'kustom') {
+                customInputs.classList.remove('hidden');
+            } else {
+                customInputs.classList.add('hidden');
+                filterLaporan();
+            }
+        }
+
+        function filterLaporan() {
+            const periode = document.getElementById('periode-laporan').value;
+            let tanggalMulai, tanggalSelesai;
+            const today = formatDate(new Date());
+
+            if (periode === 'hari_ini') {
+                tanggalMulai = today;
+                tanggalSelesai = today;
+            } else if (periode === 'bulan_ini') {
+                const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+                tanggalMulai = formatDate(startOfMonth);
+                tanggalSelesai = today;
+            } else if (periode === 'bulan_lalu') {
+                const startOfLastMonth = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1);
+                const endOfLastMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 0);
+                tanggalMulai = formatDate(startOfLastMonth);
+                tanggalSelesai = formatDate(endOfLastMonth);
+            } else if (periode === 'tahun_ini') {
+                const startOfYear = new Date(new Date().getFullYear(), 0, 1);
+                tanggalMulai = formatDate(startOfYear);
+                tanggalSelesai = today;
+            } else if (periode === 'kustom') {
+                tanggalMulai = document.getElementById('tanggal-mulai').value;
+                tanggalSelesai = document.getElementById('tanggal-selesai').value;
+                
+                if (!tanggalMulai || !tanggalSelesai) {
+                    alert('Harap isi tanggal mulai dan tanggal selesai untuk periode kustom.');
+                    return;
+                }
+            } else {
+                return;
+            }
+            
+            const startDate = new Date(tanggalMulai + 'T00:00:00');
+            const endDate = new Date(tanggalSelesai + 'T00:00:00');
+            
+            const laporanData = dataApp.reservasi.filter(reservasi => {
+                const reservasiDate = new Date(reservasi.tanggalReservasi + 'T00:00:00');
+                return reservasiDate >= startDate && reservasiDate <= endDate;
+            });
+
+            let lapakTerjual = 0;
+            let glampingTerjual = 0;
+            let totalPengunjung = 0;
+            let totalOmzet = 0;
+            let totalTiket = 0;
+            let totalReservasi = 0;
+
+            const laporanDetailBody = document.getElementById('laporan-detail');
+            laporanDetailBody.innerHTML = '';
+            
+            laporanData.sort((a, b) => new Date(b.tanggalReservasi) - new Date(a.tanggalReservasi));
+            
+            laporanData.forEach(r => {
+                const invoice = dataApp.invoice.find(inv => inv.invoice === r.invoice);
+                if (invoice) {
+                    totalReservasi += 1;
+                    totalPengunjung += parseInt(r.jumlahOrang) || 0;
+
+                    if (r.jenis === 'tenda') {
+                        lapakTerjual += (r.lapak || []).length;
+                    } else {
+                        glampingTerjual += (r.glamping || []).length;
+                    }
+
+                    if (invoice.status === 'selesai') {
+                        totalOmzet += parseInt(invoice.totalBiaya) || 0;
+                    } else if (invoice.status === 'dibayar' || invoice.status === 'aktif' || invoice.status === 'pending') {
+                        if (invoice.paymentMethod === 'sekarang' || invoice.paymentMethod === 'lokasi') {
+                            totalOmzet += parseInt(invoice.totalBiaya) || 0;
+                        } else if (invoice.paymentMethod === 'transfer') {
+                            totalOmzet += parseInt(invoice.dp) || 0;
+                        }
+                    }
+                    
+                    totalTiket += (r.jumlahOrang || 0) * (r.jumlahMalam || 0) * dataApp.pengaturan.perusahaan.hargaTiket;
+
+                    let statusBadge;
+                    if (invoice.status === 'pending') statusBadge = '<span class="badge badge-warning">Pending (DP)</span>';
+                    else if (invoice.status === 'dibayar') statusBadge = '<span class="badge badge-primary">Dibayar (DP/Lunas)</span>';
+                    else if (invoice.status === 'aktif') statusBadge = '<span class="badge badge-success">Aktif (Check-in)</span>';
+                    else if (invoice.status === 'selesai') statusBadge = '<span class="badge badge-secondary">Selesai (Check-out)</span>';
+                    else statusBadge = '<span class="badge badge-danger">Dibatalkan</span>';
+
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${invoice.invoice}</td>
+                        <td>${formatDateID(invoice.tanggalReservasi)}</td>
+                        <td>${formatDateID(invoice.tanggalCheckin)}</td>
+                        <td>${formatDateID(invoice.tanggalCheckout)}</td>
+                        <td>${invoice.nama || ''}</td>
+                        <td>${invoice.jenis ? invoice.jenis.charAt(0).toUpperCase() + invoice.jenis.slice(1) : ''}</td>
+                        <td>${formatRupiah(invoice.totalBiaya || 0)}</td>
+                        <td>${statusBadge}</td>
+                    `;
+                    laporanDetailBody.appendChild(row);
+                }
+            });
+
+            document.getElementById('laporan-total-reservasi').textContent = totalReservasi;
+            document.getElementById('laporan-lapak-terjual').textContent = lapakTerjual;
+            document.getElementById('laporan-glamping-terjual').textContent = glampingTerjual;
+            document.getElementById('laporan-total-pengunjung').textContent = totalPengunjung;
+            document.getElementById('laporan-total-tiket').textContent = formatRupiah(totalTiket);
+            document.getElementById('laporan-total-omzet').textContent = formatRupiah(totalOmzet);
+        }
+        
+        function generateLaporanPDF() {
+            const periode = document.getElementById('periode-laporan').value;
+            const laporanName = document.querySelector(`#periode-laporan option[value="${periode}"]`).textContent;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape');
+            const perusahaan = dataApp.pengaturan.perusahaan;
+
+            doc.setFontSize(18);
+            doc.setFont('helvetica', 'bold');
+            doc.text(`LAPORAN TRANSAKSI - ${perusahaan.nama.toUpperCase()}`, 14, 15);
+            doc.setFontSize(12);
+            doc.setFont('helvetica', 'normal');
+            doc.text(`Periode: ${laporanName}`, 14, 22);
+            doc.text(`Tanggal Cetak: ${formatDateID(formatDate(new Date()))}`, 14, 28);
+            
+            const totalOmzet = document.getElementById('laporan-total-omzet').textContent;
+            doc.text(`Total Omzet: ${totalOmzet}`, 14, 34);
+
+            const tableColumn = ["Invoice", "Tgl Reservasi", "Check-in", "Check-out", "Nama Pemesan", "Jenis", "Total Biaya", "Status"];
+            const tableRows = [];
+
+            const tableBody = document.getElementById('laporan-detail');
+            Array.from(tableBody.rows).forEach(row => {
+                const rowData = [];
+                Array.from(row.cells).forEach(cell => {
+                    if (cell.children.length > 0 && cell.children[0].tagName === 'SPAN') {
+                        rowData.push(cell.children[0].textContent);
+                    } else {
+                        rowData.push(cell.textContent);
+                    }
+                });
+                rowData.pop();
+                tableRows.push(rowData);
+            });
+
+            doc.autoTable(tableColumn, tableRows, {
+                startY: 40,
+                headStyles: { fillColor: [46, 125, 50], textColor: [255, 255, 255], fontStyle: 'bold' },
+                styles: { fontSize: 8 },
+                columnStyles: {
+                    6: { halign: 'right' }
+                }
+            });
+
+            doc.save(`Laporan-Transaksi-${laporanName}.pdf`);
+        }
+
+        // --- Pengaturan Section ---
+
+        function loadPengaturanData() {
+            const p = dataApp.pengaturan;
+            const comp = p.perusahaan;
+
+            document.getElementById('harga-tiket').value = comp.hargaTiket;
+            document.getElementById('dp-percentage').value = p.dpPercentage;
+            
+            document.getElementById('jam-checkin').value = p.jamCheckin;
+            document.getElementById('jam-checkout').value = p.jamCheckout;
+            document.getElementById('min-reservasi-hari').value = p.minReservasiHari;
+            document.getElementById('max-reservasi-hari').value = p.maxReservasiHari;
+            document.getElementById('max-lapak-per-reservasi').value = p.maxLapakPerReservasi;
+            document.getElementById('denda-keterlambatan').value = p.dendaKeterlambatan;
+            
+            document.getElementById('nama-bank').value = comp.namaBank;
+            document.getElementById('nomor-rekening').value = comp.norek;
+            document.getElementById('an-rekening').value = comp.anRekening;
+            document.getElementById('no-layanan').value = comp.noLayanan;
+
+            document.getElementById('footer-no-layanan').textContent = comp.noLayanan;
+        }
+
+        function simpanPengaturanUmum() {
+            try {
+                dataApp.pengaturan.perusahaan.hargaTiket = parseInt(document.getElementById('harga-tiket').value) || 0;
+                dataApp.pengaturan.perusahaan.namaBank = document.getElementById('nama-bank').value || '';
+                dataApp.pengaturan.perusahaan.norek = document.getElementById('nomor-rekening').value || '';
+                dataApp.pengaturan.perusahaan.anRekening = document.getElementById('an-rekening').value || '';
+                dataApp.pengaturan.perusahaan.noLayanan = document.getElementById('no-layanan').value || '';
+
+                dataApp.pengaturan.dpPercentage = parseInt(document.getElementById('dp-percentage').value) || 50;
+                dataApp.pengaturan.jamCheckin = document.getElementById('jam-checkin').value || '14:00';
+                dataApp.pengaturan.jamCheckout = document.getElementById('jam-checkout').value || '12:00';
+                dataApp.pengaturan.minReservasiHari = parseInt(document.getElementById('min-reservasi-hari').value) || 1;
+                dataApp.pengaturan.maxReservasiHari = parseInt(document.getElementById('max-reservasi-hari').value) || 7;
+                dataApp.pengaturan.maxLapakPerReservasi = parseInt(document.getElementById('max-lapak-per-reservasi').value) || 30;
+                dataApp.pengaturan.dendaKeterlambatan = parseInt(document.getElementById('denda-keterlambatan').value) || 0;
+
+                saveToLocalStorage();
+                loadPengaturanData();
+                alert('Pengaturan umum berhasil disimpan!');
+            } catch (e) {
+                alert('Gagal menyimpan pengaturan. Pastikan semua input terisi dengan format yang benar.');
+            }
+        }
+
+        function changePengaturanTab(tabElement, target) {
+            document.querySelectorAll('#pengaturan-section .tabs .tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#pengaturan-section .tab-content').forEach(content => content.style.display = 'none');
+            tabElement.classList.add('active');
+            document.getElementById(`tab-${target}`).style.display = 'block';
+            
+            // Scroll to top of tab content
+            document.getElementById(`tab-${target}`).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Lapak Tenda Management
+        function generatePengaturanLapak() {
+            const tbody = document.getElementById('pengaturan-lapak');
+            tbody.innerHTML = '';
+            
+            dataApp.lapakTenda.forEach((lapak, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="form-control" id="kode-lapak-${index}" value="${lapak.kode}" required></td>
+                    <td><input type="number" class="form-control" id="harga-lapak-${index}" value="${lapak.harga}" min="0"></td>
+                    <td><input type="number" class="form-control" id="kapasitas-lapak-${index}" value="${lapak.kapasitas}" min="1"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="simpanLapak(${index})">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="hapusLapak(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function simpanLapak(index) {
+            const kode = document.getElementById(`kode-lapak-${index}`).value.toUpperCase();
+            const harga = parseInt(document.getElementById(`harga-lapak-${index}`).value) || 0;
+            const kapasitas = parseInt(document.getElementById(`kapasitas-lapak-${index}`).value) || 4;
+            
+            if (!kode) {
+                alert('Kode Lapak harus diisi!');
+                return;
+            }
+            
+            const isDuplicate = dataApp.lapakTenda.some((l, i) => i !== index && l.kode === kode);
+            if (isDuplicate) {
+                alert('Kode Lapak sudah ada. Harap gunakan kode unik.');
+                return;
+            }
+
+            dataApp.lapakTenda[index].kode = kode;
+            dataApp.lapakTenda[index].harga = harga;
+            dataApp.lapakTenda[index].kapasitas = kapasitas;
+            
+            saveToLocalStorage();
+            generatePengaturanLapak();
+            alert(`Lapak ${kode} berhasil disimpan!`);
+        }
+
+        function hapusLapak(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus lapak ini?')) {
+                dataApp.lapakTenda.splice(index, 1);
+                generatePengaturanLapak(); 
+                saveToLocalStorage();
+                alert('Lapak berhasil dihapus!');
+            }
+        }
+
+        function tambahLapak() {
+            const newKode = `L${dataApp.lapakTenda.length + 1}`;
+            dataApp.lapakTenda.push({
+                kode: newKode,
+                harga: 0,
+                kapasitas: 4,
+                status: 'tersedia'
+            });
+            generatePengaturanLapak(); 
+            saveToLocalStorage();
+        }
+
+        // Glamping Management
+        function generatePengaturanGlamping() {
+            const tbody = document.getElementById('pengaturan-glamping');
+            tbody.innerHTML = '';
+            
+            dataApp.glamping.forEach((glamping, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="form-control" id="kode-glamping-${index}" value="${glamping.kode}" required></td>
+                    <td><input type="text" class="form-control" id="nama-glamping-cfg-${index}" value="${glamping.nama}" required></td>
+                    <td><input type="number" class="form-control" id="harga-glamping-${index}" value="${glamping.harga}" min="0"></td>
+                    <td><input type="number" class="form-control" id="kapasitas-glamping-${index}" value="${glamping.kapasitas}" min="1"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="simpanGlamping(${index})">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="hapusGlamping(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function simpanGlamping(index) {
+            const kode = document.getElementById(`kode-glamping-${index}`).value.toUpperCase();
+            const nama = document.getElementById(`nama-glamping-cfg-${index}`).value;
+            const harga = parseInt(document.getElementById(`harga-glamping-${index}`).value) || 0;
+            const kapasitas = parseInt(document.getElementById(`kapasitas-glamping-${index}`).value) || 4;
+            
+            if (!kode || !nama) {
+                alert('Kode dan Nama Glamping harus diisi!');
+                return;
+            }
+            
+            const isDuplicate = dataApp.glamping.some((g, i) => i !== index && g.kode === kode);
+            if (isDuplicate) {
+                alert('Kode Glamping sudah ada. Harap gunakan kode unik.');
+                return;
+            }
+
+            dataApp.glamping[index].kode = kode;
+            dataApp.glamping[index].nama = nama;
+            dataApp.glamping[index].harga = harga;
+            dataApp.glamping[index].kapasitas = kapasitas;
+            
+            saveToLocalStorage();
+            generatePengaturanGlamping();
+            alert(`Glamping ${kode} berhasil disimpan!`);
+        }
+
+        function hapusGlamping(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus glamping ini?')) {
+                dataApp.glamping.splice(index, 1);
+                generatePengaturanGlamping();
+                saveToLocalStorage();
+                alert('Glamping berhasil dihapus!');
+            }
+        }
+
+        function tambahGlamping() {
+            const newKode = `G${dataApp.glamping.length + 1}`;
+            dataApp.glamping.push({
+                kode: newKode,
+                nama: "Glamping Baru",
+                harga: 150000,
+                kapasitas: 4,
+                status: 'tersedia'
+            });
+            generatePengaturanGlamping();
+            saveToLocalStorage();
+        }
+        
+        // Barang Sewa Management
+        function generatePengaturanBarang() {
+            const tbody = document.getElementById('pengaturan-barang');
+            tbody.innerHTML = '';
+            
+            dataApp.barangSewa.forEach((barang, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="form-control" id="nama-barang-${index}" value="${barang.nama}" required></td>
+                    <td><input type="number" class="form-control" id="harga-barang-${index}" value="${barang.harga}" min="0"></td>
+                    <td><input type="text" class="form-control" id="satuan-barang-${index}" value="${barang.satuan}"></td>
+                    <td><input type="number" class="form-control" id="stok-barang-${index}" value="${barang.stok}" min="0"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="simpanBarang(${index})">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="hapusBarang(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function simpanBarang(index) {
+            const nama = document.getElementById(`nama-barang-${index}`).value;
+            const harga = parseInt(document.getElementById(`harga-barang-${index}`).value) || 0;
+            const satuan = document.getElementById(`satuan-barang-${index}`).value || 'pcs';
+            const stok = parseInt(document.getElementById(`stok-barang-${index}`).value) || 0;
+
+            if (!nama) {
+                alert('Nama Barang harus diisi!');
+                return;
+            }
+
+            dataApp.barangSewa[index].nama = nama;
+            dataApp.barangSewa[index].harga = harga;
+            dataApp.barangSewa[index].satuan = satuan;
+            dataApp.barangSewa[index].stok = stok;
+            
+            saveToLocalStorage();
+            alert(`Barang ${nama} berhasil disimpan!`);
+        }
+
+        function hapusBarang(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus barang ini?')) {
+                dataApp.barangSewa.splice(index, 1);
+                generatePengaturanBarang(); 
+                saveToLocalStorage();
+                alert('Barang berhasil dihapus!');
+            }
+        }
+
+        function tambahBarang() {
+            const newId = dataApp.barangSewa.length > 0 ? Math.max(...dataApp.barangSewa.map(b => b.id)) + 1 : 1;
+            dataApp.barangSewa.push({
+                id: newId,
+                nama: "Barang Baru",
+                harga: 0,
+                satuan: "pcs",
+                stok: 0
+            });
+            generatePengaturanBarang();
+            saveToLocalStorage();
+        }
+        
+        // Akomodasi Lainnya Management
+        function generatePengaturanAkomodasi() {
+            const tbody = document.getElementById('pengaturan-akomodasi');
+            tbody.innerHTML = '';
+            
+            dataApp.akomodasiLainnya.forEach((akomodasi, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" class="form-control" id="nama-akomodasi-${index}" value="${akomodasi.nama}" required></td>
+                    <td><input type="number" class="form-control" id="harga-akomodasi-${index}" value="${akomodasi.harga}" min="0"></td>
+                    <td><input type="text" class="form-control" id="satuan-akomodasi-${index}" value="${akomodasi.satuan}"></td>
+                    <td><input type="number" class="form-control" id="stok-akomodasi-${index}" value="${akomodasi.stok}" min="0"></td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="simpanAkomodasi(${index})">
+                            <i class="fas fa-save"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="hapusAkomodasi(${index})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function simpanAkomodasi(index) {
+            const nama = document.getElementById(`nama-akomodasi-${index}`).value;
+            const harga = parseInt(document.getElementById(`harga-akomodasi-${index}`).value) || 0;
+            const satuan = document.getElementById(`satuan-akomodasi-${index}`).value || 'pcs';
+            const stok = parseInt(document.getElementById(`stok-akomodasi-${index}`).value) || 0;
+
+            if (!nama) {
+                alert('Nama Akomodasi harus diisi!');
+                return;
+            }
+
+            dataApp.akomodasiLainnya[index].nama = nama;
+            dataApp.akomodasiLainnya[index].harga = harga;
+            dataApp.akomodasiLainnya[index].satuan = satuan;
+            dataApp.akomodasiLainnya[index].stok = stok;
+            
+            saveToLocalStorage();
+            alert(`Akomodasi ${nama} berhasil disimpan!`);
+        }
+
+        function hapusAkomodasi(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus akomodasi ini?')) {
+                dataApp.akomodasiLainnya.splice(index, 1);
+                generatePengaturanAkomodasi(); 
+                saveToLocalStorage();
+                alert('Akomodasi berhasil dihapus!');
+            }
+        }
+
+        function tambahAkomodasi() {
+            const newId = dataApp.akomodasiLainnya.length > 0 ? Math.max(...dataApp.akomodasiLainnya.map(a => a.id)) + 1 : 1;
+            dataApp.akomodasiLainnya.push({
+                id: newId,
+                nama: "Akomodasi Baru",
+                harga: 0,
+                satuan: "pcs",
+                stok: 0,
+                status: 'tersedia',
+                jumlah: 0
+            });
+            generatePengaturanAkomodasi();
+            saveToLocalStorage();
+        }
+        
+        // --- Admin Tools ---
+
+        function hapusInvoiceBulanLalu() {
+            if (!dataApp.user || dataApp.user.role !== 'admin') return;
+
+            if (!confirm('PERINGATAN! Anda akan menghapus SEMUA data reservasi dan invoice dari bulan lalu. Tindakan ini tidak dapat dibatalkan. Lanjutkan?')) {
+                return;
+            }
+
+            const today = new Date();
+            const startOfThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const endOfLastMonth = new Date(startOfThisMonth.getTime() - 1); 
+
+            const monthToDelete = endOfLastMonth.getMonth();
+            const yearToDelete = endOfLastMonth.getFullYear();
+
+            const newInvoiceList = dataApp.invoice.filter(inv => {
+                const reservasiDate = new Date(inv.tanggalReservasi + 'T00:00:00');
+                
+                return reservasiDate.getMonth() !== monthToDelete || reservasiDate.getFullYear() !== yearToDelete;
+            });
+            
+            const newReservasiList = dataApp.reservasi.filter(r => {
+                const reservasiDate = new Date(r.tanggalReservasi + 'T00:00:00');
+                
+                return reservasiDate.getMonth() !== monthToDelete || reservasiDate.getFullYear() !== yearToDelete;
+            });
+            
+            const deletedCount = dataApp.invoice.length - newInvoiceList.length;
+
+            dataApp.invoice = newInvoiceList;
+            dataApp.reservasi = newReservasiList;
+
+            saveToLocalStorage();
+            generateInvoiceList();
+            filterLaporan();
+            alert(`${deletedCount} data reservasi dan invoice dari bulan lalu berhasil dihapus.`);
+        }
+
+        function resetLapakHariIni() {
+            if (!dataApp.user || dataApp.user.role !== 'admin') return;
+
+            if (!confirm('Konfirmasi reset lapak/glamping Check-out hari ini? Status lapak akan diubah menjadi "tersedia" untuk reservasi yang sudah selesai/aktif hari ini.')) {
+                return;
+            }
+
+            const today = formatDate(new Date());
+            let resetCount = 0;
+
+            const reservationsToReset = dataApp.reservasi.filter(r => 
+                r.tanggalCheckout === today && (r.status === 'aktif' || r.status === 'dibayar')
+            );
+
+            reservationsToReset.forEach(r => {
+                const allCodes = [...(r.lapak || []), ...(r.glamping || [])];
+                allCodes.forEach(code => {
+                    let item = dataApp.lapakTenda.find(l => l.kode === code);
+                    if (!item) item = dataApp.glamping.find(g => g.kode === code);
+                    
+                    if (item && item.status !== 'tersedia') {
+                        item.status = 'tersedia';
+                        resetCount++;
+                    }
+                });
+                
+                const invoice = dataApp.invoice.find(inv => inv.invoice === r.invoice);
+                if (invoice) {
+                    invoice.status = 'selesai';
+                    invoice.tanggalSelesai = today;
+                }
+                r.status = 'selesai';
+            });
+
+            saveToLocalStorage();
+            updateDashboard();
+            updateLapakVisualization();
+            generateInvoiceList();
+            alert(`${resetCount} lapak/glamping dari ${reservationsToReset.length} reservasi Check-out hari ini telah di-reset menjadi 'tersedia' dan status reservasi diubah menjadi 'selesai'.`);
+        }
+
+        // FITUR BARU: HAPUS INVOICE TERPILIH BERDASARKAN FILTER
+        function previewInvoiceTerpilih() {
+            const invoices = filterInvoicesForDeletion();
+            const container = document.getElementById('preview-hapus-container');
+            const tbody = document.getElementById('preview-hapus-list');
+            const countElement = document.getElementById('preview-hapus-count');
+            
+            tbody.innerHTML = '';
+            
+            if (invoices.length === 0) {
+                container.classList.add('hidden');
+                alert('Tidak ada invoice yang sesuai dengan filter yang dipilih.');
+                return;
+            }
+            
+            invoices.forEach(invoice => {
+                let statusBadge;
+                if (invoice.status === 'pending') statusBadge = '<span class="badge badge-warning">Pending</span>';
+                else if (invoice.status === 'dibayar') statusBadge = '<span class="badge badge-primary">Dibayar</span>';
+                else if (invoice.status === 'aktif') statusBadge = '<span class="badge badge-success">Aktif</span>';
+                else if (invoice.status === 'selesai') statusBadge = '<span class="badge badge-secondary">Selesai</span>';
+                else statusBadge = '<span class="badge badge-danger">Dibatalkan</span>';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${invoice.invoice}</td>
+                    <td>${invoice.nama || ''}</td>
+                    <td>${invoice.jenis ? invoice.jenis.charAt(0).toUpperCase() + invoice.jenis.slice(1) : ''}</td>
+                    <td>${formatRupiah(invoice.totalBiaya || 0)}</td>
+                    <td>${statusBadge}</td>
+                    <td>${formatDateID(invoice.tanggalReservasi)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+            
+            countElement.textContent = invoices.length;
+            container.classList.remove('hidden');
+        }
+
+        function filterInvoicesForDeletion() {
+            const tanggalMulai = document.getElementById('hapus-filter-tanggal-mulai').value;
+            const tanggalSelesai = document.getElementById('hapus-filter-tanggal-selesai').value;
+            const jenis = document.getElementById('hapus-filter-jenis').value;
+            const status = document.getElementById('hapus-filter-status').value;
+            
+            return dataApp.invoice.filter(invoice => {
+                // Filter by date range
+                if (tanggalMulai && tanggalSelesai) {
+                    const invoiceDate = new Date(invoice.tanggalReservasi + 'T00:00:00');
+                    const startDate = new Date(tanggalMulai + 'T00:00:00');
+                    const endDate = new Date(tanggalSelesai + 'T00:00:00');
+                    
+                    if (invoiceDate < startDate || invoiceDate > endDate) {
+                        return false;
+                    }
+                }
+                
+                // Filter by jenis
+                if (jenis && invoice.jenis !== jenis) {
+                    return false;
+                }
+                
+                // Filter by status
+                if (status && invoice.status !== status) {
+                    return false;
+                }
+                
+                return true;
+            });
+        }
+
+        function hapusInvoiceTerpilih() {
+            const konfirmasi = document.getElementById('hapus-konfirmasi').value;
+            
+            if (konfirmasi !== 'HAPUS') {
+                alert('Harap ketik "HAPUS" di kolom konfirmasi untuk melanjutkan.');
+                return;
+            }
+            
+            const invoicesToDelete = filterInvoicesForDeletion();
+            
+            if (invoicesToDelete.length === 0) {
+                alert('Tidak ada invoice yang sesuai dengan filter yang dipilih.');
+                return;
+            }
+            
+            if (!confirm(`PERINGATAN! Anda akan menghapus ${invoicesToDelete.length} invoice. Tindakan ini tidak dapat dibatalkan. Lanjutkan?`)) {
+                return;
+            }
+            
+            // Get invoice numbers to delete
+            const invoiceNumbersToDelete = invoicesToDelete.map(inv => inv.invoice);
+            
+            // Delete from invoice array
+            dataApp.invoice = dataApp.invoice.filter(inv => !invoiceNumbersToDelete.includes(inv.invoice));
+            
+            // Delete from reservasi array
+            dataApp.reservasi = dataApp.reservasi.filter(res => !invoiceNumbersToDelete.includes(res.invoice));
+            
+            // Reset form
+            document.getElementById('hapus-filter-tanggal-mulai').value = '';
+            document.getElementById('hapus-filter-tanggal-selesai').value = '';
+            document.getElementById('hapus-filter-jenis').value = '';
+            document.getElementById('hapus-filter-status').value = '';
+            document.getElementById('hapus-konfirmasi').value = '';
+            document.getElementById('preview-hapus-container').classList.add('hidden');
+            
+            saveToLocalStorage();
+            
+            // Refresh all related displays
+            generateInvoiceList();
+            updateDashboard();
+            updateLapakVisualization();
+            filterLaporan();
+            
+            alert(`${invoicesToDelete.length} invoice berhasil dihapus.`);
+        }
+
+        // --- User Management ---
+
+        function generateUsersList() {
+            const tbody = document.getElementById('users-list');
+            tbody.innerHTML = '';
+            
+            dataApp.users.forEach(user => {
+                let roleBadge;
+                if (user.role === 'admin') roleBadge = '<span class="badge badge-admin">Admin</span>';
+                else if (user.role === 'manager') roleBadge = '<span class="badge badge-manager">Manager</span>';
+                else roleBadge = '<span class="badge badge-staff">Staff</span>';
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.nama}</td>
+                    <td>${user.username}</td>
+                    <td>${roleBadge}</td>
+                    <td>
+                        <button class="btn btn-secondary btn-sm" onclick="showUserModal(${user.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="hapusUser(${user.id})" ${dataApp.user.id === user.id ? 'disabled' : ''}>
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        document.getElementById('tambah-user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nama = document.getElementById('new-nama').value.trim();
+            const username = document.getElementById('new-username').value.trim();
+            const password = document.getElementById('new-password').value;
+            const role = document.getElementById('new-role').value;
+            
+            if (!nama || !username || !password) {
+                alert('Harap lengkapi semua field!');
+                return;
+            }
+            
+            if (dataApp.users.some(u => u.username === username)) {
+                alert('Username sudah terdaftar. Harap gunakan username lain.');
+                return;
+            }
+            
+            const newId = dataApp.users.length > 0 ? Math.max(...dataApp.users.map(u => u.id)) + 1 : 1;
+            
+            dataApp.users.push({
+                id: newId,
+                nama: nama,
+                username: username,
+                password: password,
+                role: role
+            });
+
+            saveToLocalStorage();
+            generateUsersList();
+            this.reset();
+            alert('Pengguna baru berhasil ditambahkan!');
+        });
+
+        function showUserModal(userId) {
+            const user = dataApp.users.find(u => u.id === userId);
+            if (!user) return;
+            
+            document.getElementById('edit-user-id').value = user.id;
+            document.getElementById('edit-nama').value = user.nama;
+            document.getElementById('edit-username').value = user.username;
+            document.getElementById('edit-role').value = user.role;
+            document.getElementById('edit-password').value = '';
+            
+            document.getElementById('user-modal').style.display = 'flex';
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-modal').style.display = 'none';
+        }
+
+        document.getElementById('edit-user-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const userId = parseInt(document.getElementById('edit-user-id').value);
+            const nama = document.getElementById('edit-nama').value.trim();
+            const password = document.getElementById('edit-password').value;
+            const role = document.getElementById('edit-role').value;
+            
+            if (!nama) {
+                alert('Nama harus diisi!');
+                return;
+            }
+            
+            const userIndex = dataApp.users.findIndex(u => u.id === userId);
+            if (userIndex === -1) return;
+            
+            dataApp.users[userIndex].nama = nama;
+            dataApp.users[userIndex].role = role;
+            if (password) {
+                dataApp.users[userIndex].password = password;
+            }
+
+            saveToLocalStorage();
+            generateUsersList();
+            closeUserModal();
+            alert('Data pengguna berhasil diubah!');
+        });
+        
+        function hapusUser(userId) {
+            if (dataApp.user.id === userId) {
+                alert('Anda tidak dapat menghapus akun Anda sendiri!');
+                return;
+            }
+            
+            if (confirm('Apakah Anda yakin ingin menghapus pengguna ini?')) {
+                dataApp.users = dataApp.users.filter(u => u.id !== userId);
+                saveToLocalStorage();
+                generateUsersList();
+                alert('Pengguna berhasil dihapus!');
+            }
+        }
+        
+        // --- Backup & Restore Functions ---
+        
+        function updateBackupCounts() {
+            document.getElementById('count-reservasi').textContent = dataApp.reservasi.length;
+            document.getElementById('count-lapak').textContent = dataApp.lapakTenda.length;
+            document.getElementById('count-glamping').textContent = dataApp.glamping.length;
+            document.getElementById('count-barang').textContent = dataApp.barangSewa.length;
+            document.getElementById('count-akomodasi').textContent = dataApp.akomodasiLainnya.length;
+            document.getElementById('count-users').textContent = dataApp.users.length;
+        }
+
+        function changeBackupTab(tabElement, target) {
+            document.querySelectorAll('#backup-section .tabs .tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('#backup-section .tab-content').forEach(content => content.style.display = 'none');
+            tabElement.classList.add('active');
+            document.getElementById(`${target}-tab`).style.display = 'block';
+            
+            if (target === 'backup') {
+                updateBackupCounts();
+            }
+        }
+        
+        function toggleRestoreMethod() {
+            const method = document.getElementById('restore-method').value;
+            const fileContainer = document.getElementById('restore-file-container');
+            const textContainer = document.getElementById('restore-text-container');
+            
+            if (method === 'file') {
+                fileContainer.classList.remove('hidden');
+                textContainer.classList.add('hidden');
+            } else {
+                fileContainer.classList.add('hidden');
+                textContainer.classList.remove('hidden');
+            }
+        }
+        
+        function backupData() {
+            try {
+                const backupData = {
+                    reservasi: dataApp.reservasi,
+                    invoice: dataApp.invoice,
+                    lapakTenda: dataApp.lapakTenda,
+                    glamping: dataApp.glamping,
+                    barangSewa: dataApp.barangSewa,
+                    akomodasiLainnya: dataApp.akomodasiLainnya,
+                    pengaturan: dataApp.pengaturan,
+                    users: dataApp.users,
+                    backupDate: new Date().toISOString(),
+                    version: '2025v12'
+                };
+                
+                const password = document.getElementById('backup-password').value.trim();
+                let backupString = JSON.stringify(backupData, null, 2);
+                
+                // Simple encryption if password provided
+                if (password) {
+                    backupString = btoa(backupString + '|' + password);
+                }
+                
+                const blob = new Blob([backupString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+                a.download = `backup-bsa-${timestamp}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                // Show success message
+                const successMsg = document.getElementById('backup-success');
+                const errorMsg = document.getElementById('backup-error');
+                successMsg.classList.remove('hidden');
+                errorMsg.classList.add('hidden');
+                
+                // Hide success message after 3 seconds
+                setTimeout(() => {
+                    successMsg.classList.add('hidden');
+                }, 3000);
+                
+            } catch (error) {
+                console.error('Backup error:', error);
+                const successMsg = document.getElementById('backup-success');
+                const errorMsg = document.getElementById('backup-error');
+                successMsg.classList.add('hidden');
+                errorMsg.classList.remove('hidden');
+            }
+        }
+        
+        function copyBackupToClipboard() {
+            try {
+                const backupData = {
+                    reservasi: dataApp.reservasi,
+                    invoice: dataApp.invoice,
+                    lapakTenda: dataApp.lapakTenda,
+                    glamping: dataApp.glamping,
+                    barangSewa: dataApp.barangSewa,
+                    akomodasiLainnya: dataApp.akomodasiLainnya,
+                    pengaturan: dataApp.pengaturan,
+                    users: dataApp.users,
+                    backupDate: new Date().toISOString(),
+                    version: '2025v12'
+                };
+                
+                const password = document.getElementById('backup-password').value.trim();
+                let backupString = JSON.stringify(backupData, null, 2);
+                
+                // Simple encryption if password provided
+                if (password) {
+                    backupString = btoa(backupString + '|' + password);
+                }
+                
+                navigator.clipboard.writeText(backupString)
+                    .then(() => {
+                        alert('Backup data berhasil disalin ke clipboard!');
+                    })
+                    .catch(err => {
+                        console.error('Failed to copy:', err);
+                        alert('Gagal menyalin data ke clipboard.');
+                    });
+                    
+            } catch (error) {
+                console.error('Backup copy error:', error);
+                alert('Terjadi kesalahan saat membuat backup.');
+            }
+        }
+        
+        function restoreData() {
+            const method = document.getElementById('restore-method').value;
+            const password = document.getElementById('restore-password').value.trim();
+            
+            let backupString = '';
+            
+            if (method === 'file') {
+                const fileInput = document.getElementById('backup-file');
+                if (!fileInput.files || fileInput.files.length === 0) {
+                    alert('Pilih file backup terlebih dahulu!');
+                    return;
+                }
+                
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    backupString = e.target.result;
+                    processRestore(backupString, password);
+                };
+                
+                reader.onerror = function() {
+                    showRestoreError('Gagal membaca file backup.');
+                };
+                
+                reader.readAsText(file);
+                
+            } else if (method === 'text') {
+                backupString = document.getElementById('backup-text').value.trim();
+                if (!backupString) {
+                    alert('Masukkan data backup terlebih dahulu!');
+                    return;
+                }
+                
+                processRestore(backupString, password);
+            }
+        }
+        
+        function processRestore(backupString, password) {
+            try {
+                let parsedData;
+                
+                // Check if data is encrypted (base64)
+                if (backupString.includes('|') && backupString === atob(backupString)) {
+                    // Not encrypted, try to parse directly
+                    parsedData = JSON.parse(backupString);
+                } else {
+                    // Try to decode base64
+                    try {
+                        const decoded = atob(backupString);
+                        if (password) {
+                            const parts = decoded.split('|');
+                            if (parts.length === 2 && parts[1] === password) {
+                                parsedData = JSON.parse(parts[0]);
+                            } else {
+                                showRestoreError('Password backup salah!');
+                                return;
+                            }
+                        } else {
+                            // Try to parse without password
+                            const parts = decoded.split('|');
+                            if (parts.length === 2) {
+                                showRestoreError('Backup ini dienkripsi dengan password. Masukkan password yang benar.');
+                                return;
+                            } else {
+                                parsedData = JSON.parse(decoded);
+                            }
+                        }
+                    } catch (e) {
+                        // Not base64, try to parse as plain JSON
+                        parsedData = JSON.parse(backupString);
+                    }
+                }
+                
+                // Validate backup data structure
+                if (!parsedData || typeof parsedData !== 'object') {
+                    showRestoreError('Format data backup tidak valid!');
+                    return;
+                }
+                
+                // Ask for confirmation
+                if (!confirm(`PERINGATAN! Restore data akan menggantikan semua data yang ada. 
+                
+Data yang akan direstore:
+- Reservasi: ${parsedData.reservasi ? parsedData.reservasi.length : 0}
+- Invoice: ${parsedData.invoice ? parsedData.invoice.length : 0}
+- Lapak Tenda: ${parsedData.lapakTenda ? parsedData.lapakTenda.length : 0}
+- Glamping: ${parsedData.glamping ? parsedData.glamping.length : 0}
+
+Lanjutkan?`)) {
+                    return;
+                }
+                
+                // Restore data
+                dataApp.reservasi = parsedData.reservasi || [];
+                dataApp.invoice = parsedData.invoice || [];
+                dataApp.lapakTenda = parsedData.lapakTenda || dataApp.lapakTenda;
+                dataApp.glamping = parsedData.glamping || dataApp.glamping;
+                dataApp.barangSewa = parsedData.barangSewa || dataApp.barangSewa;
+                dataApp.akomodasiLainnya = parsedData.akomodasiLainnya || dataApp.akomodasiLainnya;
+                
+                // Preserve current user if not in backup
+                const currentUser = dataApp.user;
+                dataApp.users = parsedData.users || dataApp.users;
+                
+                // Don't restore pengaturan if it might break the system
+                if (parsedData.pengaturan) {
+                    // Merge pengaturan carefully
+                    dataApp.pengaturan = { ...dataApp.pengaturan, ...parsedData.pengaturan };
+                    if (parsedData.pengaturan.perusahaan) {
+                        dataApp.pengaturan.perusahaan = { 
+                            ...dataApp.pengaturan.perusahaan, 
+                            ...parsedData.pengaturan.perusahaan 
+                        };
+                    }
+                }
+                
+                // Restore current user
+                if (currentUser) {
+                    const userExists = dataApp.users.some(u => u.id === currentUser.id);
+                    if (!userExists) {
+                        dataApp.users.push(currentUser);
+                    }
+                    dataApp.user = currentUser;
+                }
+                
+                saveToLocalStorage();
+                
+                // Show success message
+                const successMsg = document.getElementById('restore-success');
+                const errorMsg = document.getElementById('restore-error');
+                successMsg.classList.remove('hidden');
+                errorMsg.classList.add('hidden');
+                
+                // Reset form
+                document.getElementById('backup-file').value = '';
+                document.getElementById('backup-text').value = '';
+                document.getElementById('restore-password').value = '';
+                
+                // Reload the app
+                setTimeout(() => {
+                    location.reload();
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Restore error:', error);
+                showRestoreError('Format data backup tidak valid atau rusak!');
+            }
+        }
+        
+        function showRestoreError(message) {
+            const successMsg = document.getElementById('restore-success');
+            const errorMsg = document.getElementById('restore-error');
+            const errorMessage = document.getElementById('restore-error-message');
+            
+            successMsg.classList.add('hidden');
+            errorMsg.classList.remove('hidden');
+            errorMessage.textContent = message;
+        }
+        
+        function resetSystemData() {
+            const resetType = document.getElementById('reset-type').value;
+            const konfirmasi = document.getElementById('reset-confirm').value;
+            
+            if (konfirmasi !== 'RESET') {
+                alert('Harap ketik "RESET" di kolom konfirmasi untuk melanjutkan.');
+                return;
+            }
+            
+            let message = '';
+            let resetFunction;
+            
+            if (resetType === 'all') {
+                message = 'PERINGATAN! Anda akan menghapus SEMUA data sistem dan mengembalikan ke kondisi awal. Tindakan ini tidak dapat dibatalkan. Lanjutkan?';
+                resetFunction = resetAllData;
+            } else if (resetType === 'transactions') {
+                message = 'Anda akan menghapus SEMUA data transaksi (reservasi dan invoice). Data master (lapak, glamping, barang) tetap ada. Lanjutkan?';
+                resetFunction = resetTransactionData;
+            } else if (resetType === 'products') {
+                message = 'Anda akan menghapus SEMUA data master (lapak, glamping, barang) dan mengembalikan ke default. Data transaksi tetap ada. Lanjutkan?';
+                resetFunction = resetProductData;
+            }
+            
+            if (!confirm(message)) {
+                return;
+            }
+            
+            resetFunction();
+        }
+        
+        function resetAllData() {
+            // Save current user
+            const currentUser = dataApp.user;
+            
+            // Reset to default data
+            dataApp.reservasi = [];
+            dataApp.invoice = [];
+            dataApp.lapakTenda = [
+                { kode: 'D01', harga: 0, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D02', harga: 0, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D03', harga: 0, kapasitas: 4, status: 'tersedia' },
+            ];
+            dataApp.glamping = [
+                { kode: 'G01', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G02', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+            ];
+            dataApp.barangSewa = [
+                { id: 1, nama: "Tenda Dome Kapasitas 4", harga: 70000, satuan: "hari", stok: 15 },
+                { id: 2, nama: "Sleeping Bag", harga: 10000, satuan: "hari", stok: 30 },
+            ];
+            dataApp.akomodasiLainnya = [
+                { id: 1, nama: "Tenda Dome 3 Orang", harga: 60000, satuan: "unit", stok: 15, status: 'tersedia', jumlah: 0 },
+                { id: 2, nama: "Kayu Bakar (1 pack)", harga: 10000, satuan: "pack", stok: 50, status: 'tersedia', jumlah: 0 },
+            ];
+            
+            // Preserve current user
+            if (currentUser) {
+                dataApp.users = [
+                    { id: 1, nama: currentUser.nama, username: currentUser.username, password: currentUser.password, role: currentUser.role },
+                    { id: 2, nama: 'Staff Reservasi', username: 'staff', password: 'staff123', role: 'staff' },
+                ];
+                dataApp.user = currentUser;
+            } else {
+                dataApp.users = [
+                    { id: 1, nama: 'Admin Utama', username: 'admin', password: 'admin123', role: 'admin' },
+                    { id: 2, nama: 'Staff Reservasi', username: 'staff', password: 'staff123', role: 'staff' },
+                ];
+            }
+            
+            // Reset form
+            document.getElementById('reset-confirm').value = '';
+            
+            saveToLocalStorage();
+            alert('Sistem berhasil direset ke kondisi awal!');
+            
+            // Reload the app
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        }
+        
+        function resetTransactionData() {
+            dataApp.reservasi = [];
+            dataApp.invoice = [];
+            
+            // Reset form
+            document.getElementById('reset-confirm').value = '';
+            
+            saveToLocalStorage();
+            alert('Data transaksi berhasil direset!');
+            
+            // Update displays
+            generateInvoiceList();
+            updateDashboard();
+            filterLaporan();
+        }
+        
+        function resetProductData() {
+            // Reset product data to defaults
+            dataApp.lapakTenda = [
+                { kode: 'D01', harga: 0, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D02', harga: 0, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D03', harga: 0, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D04', harga: 0, kapasitas: 4, status: 'tersedia' },
+                { kode: 'D05', harga: 0, kapasitas: 4, status: 'tersedia' },
+            ];
+            dataApp.glamping = [
+                { kode: 'G01', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G02', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+                { kode: 'G03', nama: 'Glamping Tipe A (4pax)', harga: 150000, kapasitas: 4, status: 'tersedia' },
+            ];
+            dataApp.barangSewa = [
+                { id: 1, nama: "Tenda Dome Kapasitas 4", harga: 70000, satuan: "hari", stok: 15 },
+                { id: 2, nama: "Sleeping Bag", harga: 10000, satuan: "hari", stok: 30 },
+                { id: 3, nama: "Matras", harga: 5000, satuan: "hari", stok: 30 },
+                { id: 4, nama: "Kompor Portable", harga: 15000, satuan: "hari", stok: 10 },
+            ];
+            dataApp.akomodasiLainnya = [
+                { id: 1, nama: "Tenda Dome 3 Orang", harga: 60000, satuan: "unit", stok: 15, status: 'tersedia', jumlah: 0 },
+                { id: 2, nama: "Kayu Bakar (1 pack)", harga: 10000, satuan: "pack", stok: 50, status: 'tersedia', jumlah: 0 },
+                { id: 3, nama: "Kasur Lipat", harga: 15000, satuan: "unit", stok: 20, status: 'tersedia', jumlah: 0 },
+                { id: 4, nama: "Nasi Liwet Porsi Keluarga", harga: 20000, satuan: "porsi", stok: 30, status: 'tersedia', jumlah: 0 },
+            ];
+            
+            // Reset form
+            document.getElementById('reset-confirm').value = '';
+            
+            saveToLocalStorage();
+            alert('Data master produk berhasil direset ke default!');
+            
+            // Update displays
+            generatePengaturanLapak();
+            generatePengaturanGlamping();
+            generatePengaturanBarang();
+            generatePengaturanAkomodasi();
+            updateDashboard();
+        }
+
+        // --- Global Event Listeners ---
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            // Load data
             loadFromLocalStorage();
             
             // Set today's date for date inputs
@@ -3308,12 +6022,15 @@
                 }
             };
             
+            // Handle Enter key in forms
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter' && e.target.tagName === 'INPUT' && e.target.type !== 'button' && e.target.type !== 'submit') {
                     e.preventDefault();
+                    // Don't submit on Enter to prevent accidental form submission
                 }
             });
             
+            // Close mobile menu when clicking outside
             document.addEventListener('click', function(e) {
                 const nav = document.getElementById('main-nav');
                 const menuToggle = document.querySelector('.menu-toggle');
@@ -3328,7 +6045,9 @@
                 }
             });
             
+            // Handle window resize
             window.addEventListener('resize', function() {
+                // Close mobile menu on larger screens
                 if (window.innerWidth > 768) {
                     document.getElementById('main-nav').classList.remove('active');
                     const menuIcon = document.querySelector('.menu-toggle i');
@@ -3339,8 +6058,10 @@
                 }
             });
             
+            // Initialize event listeners
             document.getElementById('periode-laporan').addEventListener('change', toggleTanggalKustom);
             
+            // Fix for mobile viewport height
             function setVH() {
                 let vh = window.innerHeight * 0.01;
                 document.documentElement.style.setProperty('--vh', `${vh}px`);
@@ -3349,71 +6070,6 @@
             setVH();
             window.addEventListener('resize', setVH);
         });
-
-        // ==================== TAMBAHKAN SEMUA FUNGSI LAINNYA DI SINI ====================
-        // [Salin semua fungsi JavaScript yang ada dari kode asli Anda di sini]
-        // Pastikan untuk tidak menduplikasi fungsi yang sudah didefinisikan di atas
-
-        // Contoh: fungsi showSection
-        function showSection(sectionId) {
-            // ... implementasi fungsi showSection ...
-        }
-
-        function toggleMobileMenu() {
-            // ... implementasi fungsi toggleMobileMenu ...
-        }
-
-        function updateDashboard() {
-            // ... implementasi fungsi updateDashboard ...
-        }
-
-        // Dan seterusnya untuk semua fungsi lainnya...
-
-        // CATATAN PENTING:
-        // 1. Semua fungsi yang berkaitan dengan manipulasi data (seperti submitReservasi, 
-        //    updatePembayaran, simpanPengaturanUmum, dll.) akan otomatis menyimpan ke Firebase
-        //    melalui fungsi saveToLocalStorage yang sudah dimodifikasi.
-        // 2. Sistem sekarang berjalan secara realtime - perubahan di satu browser akan
-        //    terlihat di browser lain yang sedang online.
-        // 3. Sistem tetap berfungsi offline dengan menggunakan localStorage sebagai fallback.
-
     </script>
-    
-    <!-- Note: Karena keterbatasan panjang, saya tidak bisa menampilkan semua fungsi JavaScript -->
-    <!-- Anda perlu menyalin semua fungsi JavaScript dari kode asli Anda ke bagian ini -->
-    <!-- Fungsi-fungsi yang perlu disalin termasuk:
-         - showSection, toggleMobileMenu
-         - updateDashboard, hitungJumlahMalam, updateLapakStatus, updateGlampingStatus
-         - toggleLapakSelection, toggleGlampingSelection
-         - generateAkomodasiOptions, toggleAkomodasiSelection, updateAkomodasiJumlah
-         - changeReservasiTab, selectPaymentMethod, hitungTotalBiayaTenda, hitungTotalBiayaGlamping
-         - submitReservasi, generateInvoiceList, cariInvoice, showInvoiceModal, closeInvoiceModal
-         - toggleEditInvoiceForm, toggleDiskonType, hitungDiskon, simpanEditInvoice, batalEditInvoice
-         - generateInvoiceHTML, updatePembayaran, batalkanReservasi, checkInReservasi, checkOutReservasi
-         - printInvoiceToPDF, updateLapakVisualization, changeVisualizationTab
-         - loadInvoiceOptions, loadSewaBarangForm, hitungTotalSewaBarang, simpanSewaBarang
-         - toggleTanggalKustom, filterLaporan, generateLaporanPDF
-         - loadPengaturanData, simpanPengaturanUmum, changePengaturanTab
-         - generatePengaturanLapak, simpanLapak, hapusLapak, tambahLapak
-         - generatePengaturanGlamping, simpanGlamping, hapusGlamping, tambahGlamping
-         - generatePengaturanBarang, simpanBarang, hapusBarang, tambahBarang
-         - generatePengaturanAkomodasi, simpanAkomodasi, hapusAkomodasi, tambahAkomodasi
-         - hapusInvoiceBulanLalu, resetLapakHariIni, previewInvoiceTerpilih
-         - filterInvoicesForDeletion, hapusInvoiceTerpilih
-         - generateUsersList, showUserModal, closeUserModal, hapusUser
-         - changeBackupTab, toggleRestoreMethod, backupData, copyBackupToClipboard
-         - restoreData, processRestore, showRestoreError, resetSystemData
-         - resetAllData, resetTransactionData, resetProductData
-         - updateBackupCounts, getReservedCodes, formatRupiah, formatDate, formatDateID
-         - generateInvoiceCode, showLoadingModal, hideLoadingModal, scrollToTop
-    -->
-    
-    <!-- Karena panjang kode, saya sarankan untuk:
-         1. Gunakan kode HTML/CSS/JS yang sudah Anda miliki
-         2. Tambahkan konfigurasi Firebase di bagian atas script
-         3. Modifikasi fungsi saveToLocalStorage seperti di atas
-         4. Tambahkan fungsi initializeFirebase dan loadDataFromFirebase
-         5. Panggil initializeFirebase() di DOMContentLoaded
-    -->
 </body>
 </html>
