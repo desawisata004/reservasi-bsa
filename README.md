@@ -1,23 +1,24 @@
-# Sistem Reservasi Kemah - Bukit Sampalan Asri
+# 🏕️ Sistem Reservasi Kemah Bukit Sampalan Asri
 
-Sistem reservasi online untuk kemah keluarga dengan integrasi Firebase.
+Sistem reservasi online real-time untuk pengelolaan lapak tenda dan glamping.
 
-## Fitur Utama
-- Reservasi lapak tenda dan glamping
-- Manajemen invoice dan pembayaran
-- Laporan statistik
-- Manajemen pengguna
-- Backup data
-- Responsif untuk semua device
+## 🚀 Fitur Utama
+- **Real-time Database** - Firebase Realtime Database
+- **Multi-user** - Admin dan Staff roles
+- **Dashboard Monitoring** - Statistik live
+- **Reservasi Online** - Booking dengan validasi ketersediaan
+- **Invoice Management** - Full CRUD operations
+- **Laporan** - Filter periode & export PDF
+- **Mobile Responsive** - Optimized for all devices
 
-## Teknologi
-- HTML5, CSS3, JavaScript
-- Firebase Realtime Database
-- Firebase Authentication (basic)
-- Font Awesome icons
-- jsPDF untuk cetak invoice
+## 🔧 Teknologi
+- HTML5, CSS3, JavaScript (Vanilla)
+- Firebase (Authentication, Realtime Database)
+- jsPDF untuk cetak invoice/laporan
 
-## Cara Deploy ke Vercel
+## 📦 Instalasi & Setup
 
-### 1. Siapkan file
-Buat folder dengan struktur:
+### 1. Clone Repository
+```bash
+git clone https://github.com/username/reservasi-kemah-bsa.git
+cd reservasi-kemah-bsa
